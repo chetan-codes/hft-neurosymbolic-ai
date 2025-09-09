@@ -1,0 +1,329 @@
+{
+    "test_cases": {
+        "description": "Comprehensive test cases for validating the neurosymbolic trading system",
+        "version": "1.0.0",
+        "created": "2025-01-09",
+        "test_categories": [
+            {
+                "category": "confidence_calculation",
+                "description": "Test cases for confidence calculation accuracy",
+                "tests": [
+                    {
+                        "name": "ai_confidence_factors",
+                        "description": "Test AI confidence calculation with different factor combinations",
+                        "input": {
+                            "prediction": [
+                                0.1,
+                                0.2,
+                                0.3,
+                                0.4,
+                                0.5
+                            ],
+                            "features": [
+                                [
+                                    100,
+                                    101,
+                                    102,
+                                    103,
+                                    104
+                                ],
+                                [
+                                    0.01,
+                                    0.02,
+                                    0.01,
+                                    0.03,
+                                    0.02
+                                ]
+                            ],
+                            "symbol": "AAPL"
+                        },
+                        "expected": {
+                            "confidence_range": [
+                                0.1,
+                                0.95
+                            ],
+                            "factor_weights": {
+                                "stability": 0.22,
+                                "magnitude": 0.18,
+                                "data_quality": 0.14,
+                                "trend": 0.14,
+                                "symbol": 0.10,
+                                "volatility": 0.10,
+                                "direction": 0.06,
+                                "slope": 0.06
+                            }
+                        }
+                    },
+                    {
+                        "name": "symbolic_confidence_factors",
+                        "description": "Test symbolic confidence calculation with technical indicators",
+                        "input": {
+                            "ma_short": 185.5,
+                            "ma_long": 184.2,
+                            "rsi": 65.0,
+                            "symbol": "MSFT"
+                        },
+                        "expected": {
+                            "confidence_range": [
+                                0.1,
+                                0.95
+                            ],
+                            "factor_weights": {
+                                "ma_crossover": 0.32,
+                                "rsi_extremity": 0.22,
+                                "signal_alignment": 0.15,
+                                "rsi_extreme": 0.10,
+                                "symbol_specific": 0.12
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "category": "rule_evaluation",
+                "description": "Test cases for rule evaluation accuracy",
+                "tests": [
+                    {
+                        "name": "market_regime_detection",
+                        "description": "Test market regime detection with different market conditions",
+                        "input": {
+                            "volatility": 0.15,
+                            "trend_strength": 0.08,
+                            "volume_trend": "increasing"
+                        },
+                        "expected": {
+                            "regime": "trending_bull",
+                            "confidence": "> 0.7",
+                            "match_score": "> 0.8"
+                        }
+                    },
+                    {
+                        "name": "technical_signal_generation",
+                        "description": "Test technical signal generation with RSI and MA conditions",
+                        "input": {
+                            "ma_short": 100.5,
+                            "ma_long": 99.8,
+                            "rsi": 25.0,
+                            "price_data": [
+                                99,
+                                100,
+                                101,
+                                102,
+                                103
+                            ]
+                        },
+                        "expected": {
+                            "signal": "bullish",
+                            "confidence": "> 0.7",
+                            "priority": 3
+                        }
+                    }
+                ]
+            },
+            {
+                "category": "neurosymbolic_fusion",
+                "description": "Test cases for neurosymbolic fusion process",
+                "tests": [
+                    {
+                        "name": "aligned_signals",
+                        "description": "Test fusion with aligned AI and symbolic signals",
+                        "input": {
+                            "ai_confidence": 0.8,
+                            "symbolic_confidence": 0.75,
+                            "ai_prediction": [
+                                0.1,
+                                0.2,
+                                0.3
+                            ],
+                            "symbolic_action": "buy"
+                        },
+                        "expected": {
+                            "final_confidence": "> 0.8",
+                            "action": "buy",
+                            "agreement_bonus": 0.03
+                        }
+                    },
+                    {
+                        "name": "conflicting_signals",
+                        "description": "Test fusion with conflicting AI and symbolic signals",
+                        "input": {
+                            "ai_confidence": 0.5,
+                            "symbolic_confidence": 0.8,
+                            "ai_prediction": [
+                                0.1,
+                                0.2,
+                                0.3
+                            ],
+                            "symbolic_action": "sell"
+                        },
+                        "expected": {
+                            "final_confidence": "< 0.7",
+                            "action": "hold",
+                            "agreement_penalty": -0.02
+                        }
+                    }
+                ]
+            },
+            {
+                "category": "risk_management",
+                "description": "Test cases for risk management and soft gates",
+                "tests": [
+                    {
+                        "name": "single_risk_violation",
+                        "description": "Test soft risk gate with single violation",
+                        "input": {
+                            "position_ok": false,
+                            "liquidity_ok": true,
+                            "correlation_ok": true,
+                            "stop_loss_ok": true,
+                            "base_confidence": 0.8
+                        },
+                        "expected": {
+                            "adjusted_confidence": 0.48,
+                            "action": "buy",
+                            "risk_violations": [
+                                "position_limit"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "multiple_risk_violations",
+                        "description": "Test hard risk gate with multiple violations",
+                        "input": {
+                            "position_ok": false,
+                            "liquidity_ok": false,
+                            "correlation_ok": true,
+                            "stop_loss_ok": true,
+                            "base_confidence": 0.8
+                        },
+                        "expected": {
+                            "adjusted_confidence": 0.48,
+                            "action": "hold",
+                            "risk_violations": [
+                                "position_limit",
+                                "liquidity"
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "category": "reasoning_traces",
+                "description": "Test cases for reasoning trace generation",
+                "tests": [
+                    {
+                        "name": "trace_completeness",
+                        "description": "Test that reasoning traces contain all required components",
+                        "input": {
+                            "symbol": "AAPL",
+                            "timeframe": "daily",
+                            "strategy": "neurosymbolic"
+                        },
+                        "expected": {
+                            "trace_id": "string",
+                            "reasoning_steps": "array",
+                            "rule_evaluations": "array",
+                            "decisions": "array",
+                            "performance_metrics": "object"
+                        }
+                    },
+                    {
+                        "name": "trace_export_formats",
+                        "description": "Test reasoning trace export in different formats",
+                        "input": {
+                            "format": "json"
+                        },
+                        "expected": {
+                            "valid_json": true,
+                            "contains_traces": true,
+                            "trace_count": "> 0"
+                        }
+                    }
+                ]
+            },
+            {
+                "category": "performance",
+                "description": "Test cases for system performance and latency",
+                "tests": [
+                    {
+                        "name": "latency_requirements",
+                        "description": "Test that system meets latency requirements",
+                        "input": {
+                            "symbol": "AAPL",
+                            "timeframe": "daily",
+                            "strategy": "neurosymbolic"
+                        },
+                        "expected": {
+                            "max_latency_ms": 50,
+                            "target_latency_ms": 25
+                        }
+                    },
+                    {
+                        "name": "throughput_capacity",
+                        "description": "Test system throughput capacity",
+                        "input": {
+                            "concurrent_requests": 100,
+                            "duration_seconds": 10
+                        },
+                        "expected": {
+                            "requests_per_second": "> 100",
+                            "error_rate": "< 0.01"
+                        }
+                    }
+                ]
+            }
+        ],
+        "validation_scripts": [
+            {
+                "name": "run_confidence_tests",
+                "description": "Run confidence calculation tests",
+                "script": "python scripts/test_confidence_calculation.py"
+            },
+            {
+                "name": "run_rule_evaluation_tests",
+                "description": "Run rule evaluation tests",
+                "script": "python scripts/test_rule_evaluation.py"
+            },
+            {
+                "name": "run_fusion_tests",
+                "description": "Run neurosymbolic fusion tests",
+                "script": "python scripts/test_neurosymbolic_fusion.py"
+            },
+            {
+                "name": "run_performance_tests",
+                "description": "Run performance and latency tests",
+                "script": "python scripts/test_performance.py"
+            }
+        ],
+        "expected_results": {
+            "description": "Expected results for all test cases",
+            "confidence_accuracy": {
+                "ai_confidence": {
+                    "mean_error": "< 0.05",
+                    "std_error": "< 0.1"
+                },
+                "symbolic_confidence": {
+                    "mean_error": "< 0.05",
+                    "std_error": "< 0.1"
+                },
+                "final_confidence": {
+                    "mean_error": "< 0.05",
+                    "std_error": "< 0.1"
+                }
+            },
+            "rule_evaluation_accuracy": {
+                "regime_detection": "> 0.8",
+                "signal_generation": "> 0.75"
+            },
+            "fusion_accuracy": {
+                "aligned_signals": "> 0.85",
+                "conflicting_signals": "> 0.7"
+            },
+            "performance_metrics": {
+                "latency_p95": "< 50ms",
+                "throughput": "> 100 req/s",
+                "error_rate": "< 0.01"
+            }
+        }
+    }
+}

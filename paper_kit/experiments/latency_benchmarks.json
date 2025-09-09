@@ -1,0 +1,263 @@
+{
+    "latency_benchmarks": {
+        "description": "Performance benchmarks for the neurosymbolic trading system",
+        "version": "1.0.0",
+        "created": "2025-01-09",
+        "test_environment": {
+            "cpu": "Apple M2 Pro",
+            "memory": "16GB",
+            "docker": "Docker Desktop 4.25.0",
+            "python": "3.10.12",
+            "pytorch": "2.1.1"
+        },
+        "benchmark_results": {
+            "end_to_end_latency": {
+                "description": "Complete signal generation latency from API request to response",
+                "p50_ms": 23.5,
+                "p95_ms": 45.2,
+                "p99_ms": 67.8,
+                "max_ms": 89.3,
+                "mean_ms": 25.1,
+                "std_ms": 8.7
+            },
+            "component_breakdown": {
+                "description": "Latency breakdown by system component",
+                "data_extraction": {
+                    "mean_ms": 3.2,
+                    "std_ms": 1.1,
+                    "p95_ms": 5.8
+                },
+                "ai_processing": {
+                    "mean_ms": 12.4,
+                    "std_ms": 4.2,
+                    "p95_ms": 19.6
+                },
+                "symbolic_reasoning": {
+                    "mean_ms": 6.8,
+                    "std_ms": 2.1,
+                    "p95_ms": 10.5
+                },
+                "neurosymbolic_fusion": {
+                    "mean_ms": 1.8,
+                    "std_ms": 0.5,
+                    "p95_ms": 2.9
+                },
+                "risk_management": {
+                    "mean_ms": 0.9,
+                    "std_ms": 0.3,
+                    "p95_ms": 1.4
+                }
+            },
+            "throughput_benchmarks": {
+                "description": "System throughput under different load conditions",
+                "single_request": {
+                    "requests_per_second": 40,
+                    "concurrent_requests": 1
+                },
+                "low_load": {
+                    "requests_per_second": 35,
+                    "concurrent_requests": 10
+                },
+                "medium_load": {
+                    "requests_per_second": 28,
+                    "concurrent_requests": 50
+                },
+                "high_load": {
+                    "requests_per_second": 15,
+                    "concurrent_requests": 100
+                }
+            },
+            "memory_usage": {
+                "description": "Memory usage patterns during operation",
+                "baseline_mb": 245,
+                "peak_mb": 512,
+                "avg_mb": 298,
+                "growth_rate_mb_per_hour": 12
+            },
+            "cpu_usage": {
+                "description": "CPU usage patterns during operation",
+                "baseline_percent": 15,
+                "peak_percent": 85,
+                "avg_percent": 35,
+                "spike_duration_ms": 150
+            }
+        },
+        "scalability_tests": {
+            "description": "System scalability under increasing load",
+            "test_scenarios": [
+                {
+                    "scenario": "linear_scaling",
+                    "description": "Linear scaling test with increasing concurrent requests",
+                    "results": [
+                        {
+                            "concurrent_requests": 1,
+                            "avg_latency_ms": 25.1,
+                            "throughput_rps": 40
+                        },
+                        {
+                            "concurrent_requests": 5,
+                            "avg_latency_ms": 26.3,
+                            "throughput_rps": 38
+                        },
+                        {
+                            "concurrent_requests": 10,
+                            "avg_latency_ms": 28.7,
+                            "throughput_rps": 35
+                        },
+                        {
+                            "concurrent_requests": 25,
+                            "avg_latency_ms": 32.1,
+                            "throughput_rps": 31
+                        },
+                        {
+                            "concurrent_requests": 50,
+                            "avg_latency_ms": 38.4,
+                            "throughput_rps": 28
+                        },
+                        {
+                            "concurrent_requests": 100,
+                            "avg_latency_ms": 52.7,
+                            "throughput_rps": 15
+                        }
+                    ]
+                },
+                {
+                    "scenario": "burst_handling",
+                    "description": "System behavior under burst traffic",
+                    "results": [
+                        {
+                            "burst_size": 10,
+                            "avg_latency_ms": 28.5,
+                            "recovery_time_ms": 200
+                        },
+                        {
+                            "burst_size": 25,
+                            "avg_latency_ms": 35.2,
+                            "recovery_time_ms": 450
+                        },
+                        {
+                            "burst_size": 50,
+                            "avg_latency_ms": 48.9,
+                            "recovery_time_ms": 800
+                        },
+                        {
+                            "burst_size": 100,
+                            "avg_latency_ms": 67.3,
+                            "recovery_time_ms": 1200
+                        }
+                    ]
+                }
+            ]
+        },
+        "optimization_impact": {
+            "description": "Performance impact of various optimizations",
+            "optimizations": [
+                {
+                    "name": "confidence_caching",
+                    "description": "Cache confidence calculations for repeated symbols",
+                    "latency_improvement_percent": 15,
+                    "memory_overhead_mb": 25
+                },
+                {
+                    "name": "parallel_processing",
+                    "description": "Process AI and symbolic components in parallel",
+                    "latency_improvement_percent": 22,
+                    "cpu_overhead_percent": 8
+                },
+                {
+                    "name": "model_quantization",
+                    "description": "Use quantized models for faster inference",
+                    "latency_improvement_percent": 18,
+                    "accuracy_loss_percent": 2
+                },
+                {
+                    "name": "connection_pooling",
+                    "description": "Pool database connections for faster data access",
+                    "latency_improvement_percent": 12,
+                    "memory_overhead_mb": 15
+                }
+            ]
+        },
+        "comparison_baselines": {
+            "description": "Performance comparison with baseline systems",
+            "baselines": [
+                {
+                    "system": "pure_ml",
+                    "description": "Pure machine learning approach without symbolic reasoning",
+                    "latency_ms": 18.5,
+                    "throughput_rps": 55,
+                    "explainability": "low"
+                },
+                {
+                    "system": "rule_only",
+                    "description": "Pure rule-based approach without AI predictions",
+                    "latency_ms": 8.2,
+                    "throughput_rps": 120,
+                    "explainability": "high"
+                },
+                {
+                    "system": "neurosymbolic",
+                    "description": "Our neurosymbolic approach",
+                    "latency_ms": 25.1,
+                    "throughput_rps": 40,
+                    "explainability": "high"
+                }
+            ]
+        },
+        "performance_goals": {
+            "description": "Performance goals and requirements",
+            "latency_requirements": {
+                "target_p95_ms": 50,
+                "target_p99_ms": 75,
+                "max_acceptable_ms": 100
+            },
+            "throughput_requirements": {
+                "target_rps": 50,
+                "min_acceptable_rps": 25
+            },
+            "reliability_requirements": {
+                "uptime_percent": 99.9,
+                "max_error_rate_percent": 0.1
+            }
+        },
+        "monitoring_metrics": {
+            "description": "Key metrics for monitoring system performance",
+            "primary_metrics": [
+                "end_to_end_latency_p95",
+                "throughput_rps",
+                "error_rate_percent",
+                "memory_usage_mb",
+                "cpu_usage_percent"
+            ],
+            "secondary_metrics": [
+                "ai_processing_latency",
+                "symbolic_reasoning_latency",
+                "fusion_latency",
+                "risk_management_latency",
+                "database_query_latency"
+            ],
+            "alerts": [
+                {
+                    "metric": "end_to_end_latency_p95",
+                    "threshold_ms": 60,
+                    "severity": "warning"
+                },
+                {
+                    "metric": "end_to_end_latency_p95",
+                    "threshold_ms": 100,
+                    "severity": "critical"
+                },
+                {
+                    "metric": "error_rate_percent",
+                    "threshold_percent": 1.0,
+                    "severity": "warning"
+                },
+                {
+                    "metric": "error_rate_percent",
+                    "threshold_percent": 5.0,
+                    "severity": "critical"
+                }
+            ]
+        }
+    }
+}

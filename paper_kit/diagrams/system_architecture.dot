@@ -1,0 +1,156 @@
+digraph HFT_Neurosymbolic_System {
+    rankdir=TB;
+    node [shape=box, style=filled, fillcolor=lightblue];
+    edge [color=gray];
+    
+    // Data Sources
+    subgraph cluster_data_sources {
+        label="Data Sources";
+        style=filled;
+        fillcolor=lightgray;
+        
+        YahooFinance [label="Yahoo Finance API", fillcolor=lightgreen];
+        CCXT [label="CCXT Exchange Data", fillcolor=lightgreen];
+        AlternativeData [label="Alternative Data Sources", fillcolor=lightgreen];
+    }
+    
+    // Data Processing Layer
+    subgraph cluster_data_processing {
+        label="Data Processing Layer";
+        style=filled;
+        fillcolor=lightyellow;
+        
+        DataAdapters [label="Data Adapters", fillcolor=orange];
+        RDFMappers [label="RDF Mappers", fillcolor=orange];
+        GraphManager [label="Graph Manager", fillcolor=orange];
+    }
+    
+    // Storage Layer
+    subgraph cluster_storage {
+        label="Graph Storage Layer";
+        style=filled;
+        fillcolor=lightcyan;
+        
+        Dgraph [label="Dgraph\n(RDF Storage)", fillcolor=cyan];
+        Neo4j [label="Neo4j\n(Property Graph)", fillcolor=cyan];
+        Jena [label="Apache Jena\n(SPARQL Endpoint)", fillcolor=cyan];
+        Redis [label="Redis\n(Cache)", fillcolor=cyan];
+        PostgreSQL [label="PostgreSQL\n(GraphQL Engine)", fillcolor=cyan];
+    }
+    
+    // Core AI Components
+    subgraph cluster_ai_components {
+        label="AI Components";
+        style=filled;
+        fillcolor=lightpink;
+        
+        AIEngine [label="AI Engine\n(LSTM/Transformer)", fillcolor=pink];
+        SymbolicReasoner [label="Symbolic Reasoner\n(Rule Evaluation)", fillcolor=pink];
+        RuleLoader [label="Rule Loader\n(YAML Rules)", fillcolor=pink];
+    }
+    
+    // Fusion Layer
+    subgraph cluster_fusion {
+        label="Neurosymbolic Fusion";
+        style=filled;
+        fillcolor=lightcoral;
+        
+        TradingEngine [label="Trading Engine\n(Signal Fusion)", fillcolor=coral];
+        ConfidenceCalculator [label="Confidence Calculator\n(Multi-factor)", fillcolor=coral];
+        RiskManager [label="Risk Manager\n(Soft Gates)", fillcolor=coral];
+    }
+    
+    // Reasoning and Trace
+    subgraph cluster_reasoning {
+        label="Reasoning & Trace";
+        style=filled;
+        fillcolor=lightsteelblue;
+        
+        ReasoningTrace [label="Reasoning Trace\n(Decision Path)", fillcolor=steelblue];
+        TraceExporter [label="Trace Exporter\n(JSON/DOT)", fillcolor=steelblue];
+        Visualization [label="Visualization\n(Graphviz)", fillcolor=steelblue];
+    }
+    
+    // API Layer
+    subgraph cluster_api {
+        label="API Layer";
+        style=filled;
+        fillcolor=lightgreen;
+        
+        FastAPI [label="FastAPI Server\n(REST API)", fillcolor=green];
+        Streamlit [label="Streamlit Dashboard\n(UI)", fillcolor=green];
+        GraphQL [label="Hasura GraphQL\n(Query Engine)", fillcolor=green];
+    }
+    
+    // Monitoring
+    subgraph cluster_monitoring {
+        label="Monitoring";
+        style=filled;
+        fillcolor=lightyellow;
+        
+        Prometheus [label="Prometheus\n(Metrics)", fillcolor=yellow];
+        Grafana [label="Grafana\n(Dashboards)", fillcolor=yellow];
+        StructuredLogging [label="Structured Logging\n(Correlation IDs)", fillcolor=yellow];
+    }
+    
+    // Data Flow
+    YahooFinance -> DataAdapters;
+    CCXT -> DataAdapters;
+    AlternativeData -> DataAdapters;
+    
+    DataAdapters -> RDFMappers;
+    RDFMappers -> GraphManager;
+    
+    GraphManager -> Dgraph;
+    GraphManager -> Neo4j;
+    GraphManager -> Jena;
+    GraphManager -> Redis;
+    GraphManager -> PostgreSQL;
+    
+    // AI Processing Flow
+    Dgraph -> AIEngine;
+    Neo4j -> AIEngine;
+    Jena -> AIEngine;
+    
+    Dgraph -> SymbolicReasoner;
+    Neo4j -> SymbolicReasoner;
+    Jena -> SymbolicReasoner;
+    
+    RuleLoader -> SymbolicReasoner;
+    
+    // Fusion Flow
+    AIEngine -> TradingEngine;
+    SymbolicReasoner -> TradingEngine;
+    TradingEngine -> ConfidenceCalculator;
+    TradingEngine -> RiskManager;
+    
+    // Reasoning Flow
+    SymbolicReasoner -> ReasoningTrace;
+    TradingEngine -> ReasoningTrace;
+    ReasoningTrace -> TraceExporter;
+    TraceExporter -> Visualization;
+    
+    // API Flow
+    TradingEngine -> FastAPI;
+    ReasoningTrace -> FastAPI;
+    FastAPI -> Streamlit;
+    PostgreSQL -> GraphQL;
+    
+    // Monitoring Flow
+    AIEngine -> Prometheus;
+    SymbolicReasoner -> Prometheus;
+    TradingEngine -> Prometheus;
+    FastAPI -> Prometheus;
+    Prometheus -> Grafana;
+    
+    AIEngine -> StructuredLogging;
+    SymbolicReasoner -> StructuredLogging;
+    TradingEngine -> StructuredLogging;
+    FastAPI -> StructuredLogging;
+    
+    // Key Components Highlighting
+    AIEngine [fillcolor=gold, style=filled, penwidth=3];
+    SymbolicReasoner [fillcolor=gold, style=filled, penwidth=3];
+    TradingEngine [fillcolor=gold, style=filled, penwidth=3];
+    ConfidenceCalculator [fillcolor=gold, style=filled, penwidth=3];
+}

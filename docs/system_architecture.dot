@@ -1,0 +1,137 @@
+digraph HFT_Neurosymbolic_System {
+    rankdir=TB;
+    node [shape=box, style=filled];
+    edge [color=gray];
+    
+    // External Data Sources
+    subgraph cluster_data_sources {
+        label="Data Sources";
+        style=filled;
+        fillcolor=lightblue;
+        
+        YF [label="yfinance API", fillcolor=lightcyan];
+        CCXT [label="CCXT Crypto APIs", fillcolor=lightcyan];
+        ALT [label="Alternative Data", fillcolor=lightcyan];
+    }
+    
+    // Data Ingestion Layer
+    subgraph cluster_data_ingestion {
+        label="Data Ingestion";
+        style=filled;
+        fillcolor=lightgreen;
+        
+        ADAPTERS [label="Market Data Adapters", fillcolor=lightgreen];
+        LOADERS [label="Data Loaders", fillcolor=lightgreen];
+        RDF [label="RDF Data Generator", fillcolor=lightgreen];
+    }
+    
+    // Graph Databases
+    subgraph cluster_storage {
+        label="Graph Storage Layer";
+        style=filled;
+        fillcolor=lightyellow;
+        
+        DGRAPH [label="Dgraph\nRDF Triples", shape=cylinder, fillcolor=lightyellow];
+        NEO4J [label="Neo4j\nProperty Graph", shape=cylinder, fillcolor=lightyellow];
+        JENA [label="Apache Jena\nSPARQL Endpoint", shape=cylinder, fillcolor=lightyellow];
+        REDIS [label="Redis\nCache & Sessions", shape=cylinder, fillcolor=lightyellow];
+    }
+    
+    // Core AI Components
+    subgraph cluster_ai_core {
+        label="Neurosymbolic AI Core";
+        style=filled;
+        fillcolor=lightcoral;
+        
+        GM [label="Graph Manager\nData Orchestration", fillcolor=lightcoral];
+        AI [label="AI Engine\nLSTM + Transformer", fillcolor=lightcoral];
+        SR [label="Symbolic Reasoner\nRule-based Logic", fillcolor=lightcoral];
+        RL [label="Rule Loader\nYAML Rule Packs", fillcolor=lightcoral];
+    }
+    
+    // Trading Engine
+    subgraph cluster_trading {
+        label="Trading Engine";
+        style=filled;
+        fillcolor=lightpink;
+        
+        TE [label="Trading Engine\nSignal Generation", fillcolor=lightpink];
+        STRATEGIES [label="Strategy Configs\nneurosymbolic, momentum\nmean_reversion, rule_only", fillcolor=lightpink];
+    }
+    
+    // API Layer
+    subgraph cluster_api {
+        label="API Layer";
+        style=filled;
+        fillcolor=lightsteelblue;
+        
+        FASTAPI [label="FastAPI Server\nPort 8001", fillcolor=lightsteelblue];
+        ENDPOINTS [label="Trading Endpoints\n/api/v1/trading/signal\n/api/v1/reasoning/traces\n/api/v1/rules/packs", fillcolor=lightsteelblue];
+    }
+    
+    // User Interface
+    subgraph cluster_ui {
+        label="User Interface";
+        style=filled;
+        fillcolor=lightgray;
+        
+        STREAMLIT [label="Streamlit Dashboard\nPort 8501", fillcolor=lightgray];
+        TRACE_VIEWER [label="Reasoning Trace Viewer", fillcolor=lightgray];
+        SIGNAL_PANEL [label="Trading Signal Panel", fillcolor=lightgray];
+    }
+    
+    // Monitoring
+    subgraph cluster_monitoring {
+        label="Monitoring & Observability";
+        style=filled;
+        fillcolor=lightgoldenrodyellow;
+        
+        PROMETHEUS [label="Prometheus Metrics", fillcolor=lightgoldenrodyellow];
+        GRAFANA [label="Grafana Dashboards", fillcolor=lightgoldenrodyellow];
+        LOGS [label="Structured Logging", fillcolor=lightgoldenrodyellow];
+    }
+    
+    // Data Flow Connections
+    YF -> ADAPTERS;
+    CCXT -> ADAPTERS;
+    ALT -> ADAPTERS;
+    
+    ADAPTERS -> LOADERS;
+    LOADERS -> RDF;
+    RDF -> DGRAPH;
+    RDF -> NEO4J;
+    RDF -> JENA;
+    
+    DGRAPH -> GM;
+    NEO4J -> GM;
+    JENA -> GM;
+    REDIS -> GM;
+    
+    GM -> AI;
+    GM -> SR;
+    RL -> SR;
+    
+    AI -> TE;
+    SR -> TE;
+    STRATEGIES -> TE;
+    
+    TE -> FASTAPI;
+    FASTAPI -> ENDPOINTS;
+    
+    ENDPOINTS -> STREAMLIT;
+    STREAMLIT -> TRACE_VIEWER;
+    STREAMLIT -> SIGNAL_PANEL;
+    
+    FASTAPI -> PROMETHEUS;
+    PROMETHEUS -> GRAFANA;
+    FASTAPI -> LOGS;
+    
+    // Styling
+    classDef dataSource fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef storage fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef aiCore fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px;
+    classDef trading fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef api fill:#fce4ec,stroke:#880e4f,stroke-width:2px;
+    classDef ui fill:#f1f8e9,stroke:#33691e,stroke-width:2px;
+    classDef monitoring fill:#fff8e1,stroke:#f57f17,stroke-width:2px;
+}

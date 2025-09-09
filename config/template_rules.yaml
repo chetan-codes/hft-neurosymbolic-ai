@@ -1,0 +1,26 @@
+compliance: {}
+execution: {}
+market_regimes:
+  example_regime:
+    actions:
+    - action: buy
+      confidence: 0.8
+      risk_level: moderate
+    conditions:
+    - condition_name: condition_value
+    confidence_threshold: 0.7
+    description: Description of the regime
+    name: Example Market Regime
+metadata:
+  author: Your Name
+  created: YYYY-MM-DD
+  description: Template for neurosymbolic trading rules
+  last_updated: YYYY-MM-DD
+  name: template_rule_pack
+  tags:
+  - trading
+  - neurosymbolic
+  - hft
+  version: 1.0.0
+risk_assessment: {}
+technical_signals: {}

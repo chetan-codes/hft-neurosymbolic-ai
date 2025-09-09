@@ -1,0 +1,253 @@
+{
+    "sample_data": {
+        "description": "Sample market data for testing and validation",
+        "symbols": [
+            "AAPL",
+            "MSFT",
+            "GOOGL",
+            "TSLA",
+            "AMZN"
+        ],
+        "timeframes": [
+            "daily",
+            "hourly",
+            "minute"
+        ],
+        "data_sources": [
+            "dgraph",
+            "neo4j",
+            "jena"
+        ],
+        "sample_records": [
+            {
+                "symbol": "AAPL",
+                "timestamp": "2025-01-09T14:00:00Z",
+                "price": 185.92,
+                "volume": 45000000,
+                "open": 184.50,
+                "high": 186.25,
+                "low": 184.20,
+                "close": 185.92,
+                "adj_close": 185.92
+            },
+            {
+                "symbol": "MSFT",
+                "timestamp": "2025-01-09T14:00:00Z",
+                "price": 378.85,
+                "volume": 28000000,
+                "open": 377.20,
+                "high": 379.50,
+                "low": 376.80,
+                "close": 378.85,
+                "adj_close": 378.85
+            },
+            {
+                "symbol": "GOOGL",
+                "timestamp": "2025-01-09T14:00:00Z",
+                "price": 142.56,
+                "volume": 32000000,
+                "open": 141.80,
+                "high": 143.20,
+                "low": 141.50,
+                "close": 142.56,
+                "adj_close": 142.56
+            },
+            {
+                "symbol": "TSLA",
+                "timestamp": "2025-01-09T14:00:00Z",
+                "price": 238.45,
+                "volume": 65000000,
+                "open": 235.80,
+                "high": 240.20,
+                "low": 235.50,
+                "close": 238.45,
+                "adj_close": 238.45
+            },
+            {
+                "symbol": "AMZN",
+                "timestamp": "2025-01-09T14:00:00Z",
+                "price": 155.18,
+                "volume": 38000000,
+                "open": 154.20,
+                "high": 156.50,
+                "low": 153.80,
+                "close": 155.18,
+                "adj_close": 155.18
+            }
+        ],
+        "technical_indicators": {
+            "description": "Sample technical indicators for the above data",
+            "AAPL": {
+                "ma_5": 185.45,
+                "ma_10": 184.82,
+                "ma_20": 183.95,
+                "rsi": 58.3,
+                "volatility": 0.025,
+                "trend_strength": 0.012
+            },
+            "MSFT": {
+                "ma_5": 378.12,
+                "ma_10": 377.45,
+                "ma_20": 376.20,
+                "rsi": 62.1,
+                "volatility": 0.018,
+                "trend_strength": 0.008
+            },
+            "GOOGL": {
+                "ma_5": 142.20,
+                "ma_10": 141.85,
+                "ma_20": 141.20,
+                "rsi": 55.7,
+                "volatility": 0.022,
+                "trend_strength": 0.015
+            },
+            "TSLA": {
+                "ma_5": 237.80,
+                "ma_10": 236.45,
+                "ma_20": 234.20,
+                "rsi": 68.9,
+                "volatility": 0.035,
+                "trend_strength": 0.025
+            },
+            "AMZN": {
+                "ma_5": 154.85,
+                "ma_10": 154.20,
+                "ma_20": 153.45,
+                "rsi": 52.4,
+                "volatility": 0.020,
+                "trend_strength": 0.010
+            }
+        },
+        "market_regimes": {
+            "description": "Sample market regime classifications",
+            "current_regime": "trending_bull",
+            "regime_confidence": 0.75,
+            "volatility_level": "moderate",
+            "trend_direction": "upward",
+            "volume_trend": "increasing"
+        },
+        "risk_metrics": {
+            "description": "Sample risk assessment metrics",
+            "var_95": 0.025,
+            "max_drawdown": 0.08,
+            "correlation_matrix": {
+                "AAPL": {
+                    "MSFT": 0.65,
+                    "GOOGL": 0.58,
+                    "TSLA": 0.42,
+                    "AMZN": 0.61
+                },
+                "MSFT": {
+                    "AAPL": 0.65,
+                    "GOOGL": 0.72,
+                    "TSLA": 0.38,
+                    "AMZN": 0.68
+                },
+                "GOOGL": {
+                    "AAPL": 0.58,
+                    "MSFT": 0.72,
+                    "TSLA": 0.35,
+                    "AMZN": 0.55
+                },
+                "TSLA": {
+                    "AAPL": 0.42,
+                    "MSFT": 0.38,
+                    "GOOGL": 0.35,
+                    "AMZN": 0.45
+                },
+                "AMZN": {
+                    "AAPL": 0.61,
+                    "MSFT": 0.68,
+                    "GOOGL": 0.55,
+                    "TSLA": 0.45
+                }
+            }
+        }
+    },
+    "test_scenarios": {
+        "description": "Test scenarios for validation",
+        "scenarios": [
+            {
+                "name": "high_confidence_buy",
+                "description": "Scenario with high confidence buy signal",
+                "market_data": {
+                    "price_trend": "strong_upward",
+                    "volume": "high",
+                    "rsi": 25,
+                    "ma_crossover": "golden_cross"
+                },
+                "expected_confidence": "> 0.8",
+                "expected_action": "buy"
+            },
+            {
+                "name": "low_confidence_hold",
+                "description": "Scenario with low confidence hold signal",
+                "market_data": {
+                    "price_trend": "sideways",
+                    "volume": "low",
+                    "rsi": 50,
+                    "ma_crossover": "none"
+                },
+                "expected_confidence": "< 0.4",
+                "expected_action": "hold"
+            },
+            {
+                "name": "conflicting_signals",
+                "description": "Scenario with conflicting AI and symbolic signals",
+                "market_data": {
+                    "price_trend": "upward",
+                    "volume": "high",
+                    "rsi": 75,
+                    "ma_crossover": "golden_cross"
+                },
+                "expected_confidence": "0.4 - 0.6",
+                "expected_action": "hold"
+            },
+            {
+                "name": "risk_violation",
+                "description": "Scenario with risk management violations",
+                "market_data": {
+                    "price_trend": "strong_upward",
+                    "volume": "very_high",
+                    "rsi": 20,
+                    "ma_crossover": "golden_cross",
+                    "risk_violations": [
+                        "high_volatility",
+                        "position_limit"
+                    ]
+                },
+                "expected_confidence": "< 0.5",
+                "expected_action": "hold"
+            }
+        ]
+    },
+    "validation_metrics": {
+        "description": "Expected validation metrics for the sample data",
+        "confidence_ranges": {
+            "ai_confidence": {
+                "min": 0.1,
+                "max": 0.95,
+                "expected_mean": 0.6
+            },
+            "symbolic_confidence": {
+                "min": 0.1,
+                "max": 0.95,
+                "expected_mean": 0.65
+            },
+            "final_confidence": {
+                "min": 0.1,
+                "max": 0.95,
+                "expected_mean": 0.62
+            }
+        },
+        "action_distribution": {
+            "buy": 0.25,
+            "sell": 0.15,
+            "hold": 0.60
+        },
+        "latency_requirements": {
+            "max_latency_ms": 50,
+            "target_latency_ms": 25
+        }
+    }
+}

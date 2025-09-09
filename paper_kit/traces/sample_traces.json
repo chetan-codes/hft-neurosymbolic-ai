@@ -1,0 +1,127 @@
+{
+    "symbol": "AAPL",
+    "signal": {
+        "symbol": "AAPL",
+        "strategy": "neurosymbolic",
+        "signal": {
+            "action": "hold",
+            "confidence": 0.5538302846786182,
+            "reasoning": "high_risk_environment",
+            "execution_plan": {
+                "symbol": "AAPL",
+                "action": "hold",
+                "position_size": 0.05538302846786182,
+                "execution_algorithm": "vwap",
+                "urgency": "medium",
+                "slippage_limit": 0.001,
+                "order_limits": {
+                    "max_order_size": 100000,
+                    "min_order_size": 1000
+                }
+            },
+            "risk_violations": []
+        },
+        "confidence": 0.5538302846786182,
+        "reasoning": "high_risk_environment",
+        "execution_plan": {
+            "symbol": "AAPL",
+            "action": "hold",
+            "position_size": 0.05538302846786182,
+            "execution_algorithm": "vwap",
+            "urgency": "medium",
+            "slippage_limit": 0.001,
+            "order_limits": {
+                "max_order_size": 100000,
+                "min_order_size": 1000
+            }
+        },
+        "signal_time_ms": 0.09775161743164062,
+        "timestamp": "2025-09-09T15:17:30.965970"
+    },
+    "confidence": 0.5538302846786182,
+    "timestamp": "2025-09-09T15:17:30.966105",
+    "ai_prediction": {
+        "predictions": {
+            "lstm": {
+                "prediction": [
+                    0.04385161027312279,
+                    -0.10240980237722397,
+                    -0.04402393102645874,
+                    0.056351423263549805,
+                    0.005524580832570791
+                ],
+                "confidence": 0.6158180900597572,
+                "model_type": "lstm"
+            }
+        },
+        "ensemble": {
+            "prediction": [
+                0.04385161027312279,
+                -0.10240980237722397,
+                -0.04402393102645874,
+                0.056351423263549805,
+                0.005524580832570791
+            ],
+            "confidence": 0.5845757116965452,
+            "model_count": 1,
+            "individual_confidences": [
+                0.6158180900597572
+            ]
+        },
+        "prediction_time_ms": 143.74494552612305,
+        "timestamp": "2025-09-09T15:17:30.958205",
+        "symbol": "AAPL"
+    },
+    "symbolic_analysis": {
+        "analysis": {
+            "market_regime": {
+                "regime": "trending_bull",
+                "confidence": 0.26249999999999996,
+                "match_score": 0.375,
+                "rule_confidence": 0.7,
+                "rule_source": "rule_pack",
+                "rule_pack": "hft_trading_rules_v1"
+            },
+            "technical_signals": {
+                "signal": "bullish",
+                "confidence": 0.75,
+                "match_score": 1.0,
+                "rule_confidence": 0.75,
+                "priority": 1,
+                "rule_source": "rule_pack",
+                "rule_pack": "hft_trading_rules_v1"
+            },
+            "risk_assessment": {
+                "risk_level": "extreme",
+                "volatility": 474.0824683078529,
+                "var_95": 0.46687776422835064,
+                "max_drawdown": 0.8001095718869844,
+                "violations": [
+                    "high_volatility",
+                    "high_var",
+                    "high_drawdown"
+                ],
+                "confidence": 0.95
+            },
+            "compliance_check": {
+                "compliant": true,
+                "trading_hours": true,
+                "position_limits": true,
+                "restricted_securities": true,
+                "violations": []
+            },
+            "trading_recommendation": {
+                "action": "hold",
+                "confidence": 0.8,
+                "reasoning": "high_risk_environment",
+                "conditions": [
+                    "risk_limit_exceeded"
+                ]
+            }
+        },
+        "reasoning_time_ms": 7.355690002441406,
+        "timestamp": "2025-09-09T15:17:30.965827",
+        "rule_pack_used": "hft_trading_rules_v1",
+        "reasoning_trace_id": "trace_analysis_1757431050_1757431050"
+    }
+}
