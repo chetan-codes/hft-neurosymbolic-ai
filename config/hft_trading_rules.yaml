@@ -1,0 +1,264 @@
+# HFT Trading Rules - Production Rule Pack
+# Based on the neurosymbolic trading schema
+
+metadata:
+  name: "hft_trading_rules_v1"
+  version: "1.0.0"
+  description: "Production trading rules for HFT neurosymbolic AI system"
+  author: "HFT Neurosymbolic AI Team"
+  created: "2025-08-29"
+  last_updated: "2025-08-29"
+  tags: ["trading", "neurosymbolic", "hft", "production"]
+
+market_regimes:
+  trending_bull:
+    name: "Trending Bull Market"
+    description: "Strong upward price movement with high volume"
+    conditions:
+      - price_momentum: "positive"
+      - volume_trend: "increasing"
+      - moving_averages: "bullish_crossover"
+      - volatility: "moderate_to_high"
+    confidence_threshold: 0.7
+    actions:
+      - action: "buy"
+        confidence: 0.8
+        risk_level: "moderate"
+      - action: "hold"
+        confidence: 0.2
+        risk_level: "low"
+
+  trending_bear:
+    name: "Trending Bear Market"
+    description: "Strong downward price movement with high volume"
+    conditions:
+      - price_momentum: "negative"
+      - volume_trend: "increasing"
+      - moving_averages: "bearish_crossover"
+      - volatility: "moderate_to_high"
+    confidence_threshold: 0.7
+    actions:
+      - action: "sell"
+        confidence: 0.8
+        risk_level: "moderate"
+      - action: "hold"
+        confidence: 0.2
+        risk_level: "low"
+
+  sideways_volatile:
+    name: "Sideways Volatile Market"
+    description: "Lateral price movement with high volatility"
+    conditions:
+      - price_momentum: "neutral"
+      - volatility: "high"
+      - moving_averages: "sideways"
+      - volume_trend: "irregular"
+    confidence_threshold: 0.6
+    actions:
+      - action: "hold"
+        confidence: 0.7
+        risk_level: "high"
+      - action: "scalp"
+        confidence: 0.3
+        risk_level: "very_high"
+
+  low_volatility:
+    name: "Low Volatility Market"
+    description: "Minimal price movement with low volume"
+    conditions:
+      - price_momentum: "minimal"
+      - volatility: "low"
+      - moving_averages: "converging"
+      - volume_trend: "decreasing"
+    confidence_threshold: 0.5
+    actions:
+      - action: "hold"
+        confidence: 0.8
+        risk_level: "low"
+      - action: "wait"
+        confidence: 0.2
+        risk_level: "minimal"
+
+technical_signals:
+  moving_average_crossover:
+    name: "Moving Average Crossover"
+    description: "Golden cross and death cross signals"
+    rules:
+      golden_cross:
+        condition: "ma_20 > ma_50"
+        signal: "bullish"
+        confidence: 0.75
+        confirmation_required: true
+      death_cross:
+        condition: "ma_20 < ma_50"
+        signal: "bearish"
+        confidence: 0.75
+        confirmation_required: true
+
+  rsi_signals:
+    name: "RSI Divergence and Extremes"
+    description: "Relative Strength Index based signals"
+    rules:
+      oversold:
+        condition: "rsi < 30"
+        signal: "bullish"
+        confidence: 0.7
+        confirmation_required: false
+      overbought:
+        condition: "rsi > 70"
+        signal: "bearish"
+        confidence: 0.7
+        confirmation_required: false
+      bullish_divergence:
+        condition: "price_lower_lows AND rsi_higher_lows"
+        signal: "bullish"
+        confidence: 0.8
+        confirmation_required: true
+      bearish_divergence:
+        condition: "price_higher_highs AND rsi_lower_highs"
+        signal: "bearish"
+        confidence: 0.8
+        confirmation_required: true
+
+  volume_signals:
+    name: "Volume-Based Signals"
+    description: "Volume confirmation and divergence"
+    rules:
+      volume_confirmation:
+        condition: "price_up AND volume_up"
+        signal: "bullish"
+        confidence: 0.8
+        confirmation_required: false
+      volume_divergence:
+        condition: "price_up AND volume_down"
+        signal: "bearish"
+        confidence: 0.6
+        confirmation_required: true
+      volume_spike:
+        condition: "volume > avg_volume * 2"
+        signal: "attention"
+        confidence: 0.7
+        confirmation_required: true
+
+risk_assessment:
+  position_sizing:
+    name: "Position Size Calculation"
+    description: "Dynamic position sizing based on volatility and confidence"
+    rules:
+      conservative:
+        max_position_size: 0.02
+        confidence_threshold: 0.8
+        volatility_threshold: 0.3
+      moderate:
+        max_position_size: 0.05
+        confidence_threshold: 0.6
+        volatility_threshold: 0.5
+      aggressive:
+        max_position_size: 0.10
+        confidence_threshold: 0.4
+        volatility_threshold: 0.7
+
+  stop_loss:
+    name: "Stop Loss Rules"
+    description: "Dynamic stop loss based on volatility and market regime"
+    rules:
+      trending_market:
+        stop_loss_pct: 0.05
+        trailing_stop: true
+        atr_multiplier: 2.0
+      sideways_market:
+        stop_loss_pct: 0.03
+        trailing_stop: false
+        atr_multiplier: 1.5
+      volatile_market:
+        stop_loss_pct: 0.08
+        trailing_stop: true
+        atr_multiplier: 2.5
+
+  correlation_risk:
+    name: "Correlation Risk Management"
+    description: "Limit exposure to correlated assets"
+    rules:
+      max_correlation:
+        threshold: 0.7
+        max_exposure: 0.15
+      sector_limits:
+        max_sector_exposure: 0.25
+        max_single_sector: 0.15
+
+compliance:
+  trading_hours:
+    name: "Trading Hours Restrictions"
+    description: "Market hours and pre/post market rules"
+    rules:
+      regular_hours:
+        start: "09:30"
+        end: "16:00"
+        timezone: "America/New_York"
+      pre_market:
+        allowed: true
+        start: "04:00"
+        end: "09:30"
+        max_position_size: 0.5
+      post_market:
+        allowed: true
+        start: "16:00"
+        end: "20:00"
+        max_position_size: 0.3
+
+  position_limits:
+    name: "Position Size Limits"
+    description: "Maximum position sizes and concentration limits"
+    rules:
+      max_single_position: 0.10
+      max_total_leverage: 2.0
+      max_overnight_exposure: 0.5
+      min_cash_reserve: 0.1
+
+  restricted_securities:
+    name: "Restricted Securities"
+    description: "Securities with trading restrictions"
+    rules:
+      earnings_blackout:
+        days_before: 2
+        days_after: 1
+        action: "no_new_positions"
+      news_blackout:
+        duration_hours: 24
+        action: "reduce_exposure"
+      circuit_breakers:
+        action: "halt_trading"
+        resume_after: "market_reset"
+
+execution:
+  order_types:
+    name: "Order Type Selection"
+    description: "Dynamic order type selection based on market conditions"
+    rules:
+      liquid_market:
+        primary: "market"
+        fallback: "limit"
+        spread_threshold: 0.001
+      illiquid_market:
+        primary: "limit"
+        fallback: "market"
+        spread_threshold: 0.005
+      volatile_market:
+        primary: "stop_limit"
+        fallback: "market"
+        spread_threshold: 0.01
+
+  timing:
+    name: "Execution Timing"
+    description: "Optimal execution timing based on market microstructure"
+    rules:
+      avoid_open_close:
+        open_window: "09:30-09:45"
+        close_window: "15:45-16:00"
+        action: "reduce_aggressiveness"
+      lunch_lull:
+        window: "12:00-13:00"
+        action: "increase_patience"
+      earnings_announcements:
+        action: "delay_execution"
+        delay_minutes: 15

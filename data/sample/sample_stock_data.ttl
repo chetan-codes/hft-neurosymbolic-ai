@@ -1,0 +1,44 @@
+@prefix hft: <http://hft.ai/ontology#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Sample stock data for testing
+hft:AAPL_2024-01-01 rdf:type hft:StockData ;
+    hft:symbol "AAPL" ;
+    hft:date "2024-01-01"^^xsd:date ;
+    hft:openPrice 185.64 ;
+    hft:highPrice 186.87 ;
+    hft:lowPrice 185.50 ;
+    hft:closePrice 186.86 ;
+    hft:volume 52848100 ;
+    hft:adjustedClose 186.86 .
+
+hft:AAPL_2024-01-02 rdf:type hft:StockData ;
+    hft:symbol "AAPL" ;
+    hft:date "2024-01-02"^^xsd:date ;
+    hft:openPrice 186.86 ;
+    hft:highPrice 188.51 ;
+    hft:lowPrice 186.86 ;
+    hft:closePrice 188.63 ;
+    hft:volume 47320000 ;
+    hft:adjustedClose 188.63 .
+
+hft:MSFT_2024-01-01 rdf:type hft:StockData ;
+    hft:symbol "MSFT" ;
+    hft:date "2024-01-01"^^xsd:date ;
+    hft:openPrice 374.51 ;
+    hft:highPrice 376.50 ;
+    hft:lowPrice 374.20 ;
+    hft:closePrice 376.04 ;
+    hft:volume 21500000 ;
+    hft:adjustedClose 376.04 .
+
+hft:MSFT_2024-01-02 rdf:type hft:StockData ;
+    hft:symbol "MSFT" ;
+    hft:date "2024-01-02"^^xsd:date ;
+    hft:openPrice 376.04 ;
+    hft:highPrice 378.85 ;
+    hft:lowPrice 375.50 ;
+    hft:closePrice 378.85 ;
+    hft:volume 19800000 ;
+    hft:adjustedClose 378.85 .

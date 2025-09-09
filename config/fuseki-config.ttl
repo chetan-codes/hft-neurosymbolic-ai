@@ -1,0 +1,30 @@
+@prefix :        <http://base/#> .
+@prefix tdb:     <http://jena.hpl.hp.com/2008/tdb#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ja:      <http://jena.hpl.hp.com/2005/11/Assembler#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix fuseki:  <http://jena.apache.org/fuseki#> .
+
+# HFT Neurosymbolic AI Dataset Configuration
+:service_tdb_all  a                   fuseki:Service ;
+        rdfs:label                    "HFT Neurosymbolic AI Dataset" ;
+        fuseki:name                   "hft_dataset" ;
+        fuseki:serviceQuery           "query" ;
+        fuseki:serviceQuery           "sparql" ;
+        fuseki:serviceUpdate          "update" ;
+        fuseki:serviceUpload          "upload" ;
+        fuseki:serviceReadWriteGraphStore "data" ;
+        fuseki:dataset                :dataset .
+
+:dataset a        ja:RDFDataset ;
+        ja:defaultGraph               :model ;
+        ja:namedGraph
+                [ ja:graphName        <http://example.org/hft/graph1> ;
+                  ja:graph            :model
+                ] .
+
+:model    a            ja:InfModel ;
+        ja:baseModel                   :tdbGraph .
+
+:tdbGraph a            tdb:GraphTDB ;
+        tdb:location                   "DB" . 

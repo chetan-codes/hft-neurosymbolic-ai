@@ -1,0 +1,214 @@
+version: '3.8'
+
+services:
+  # Python Application with all AI/ML dependencies
+  hft_app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: hft_neurosymbolic_app
+    ports:
+      - "8001:8000"  # FastAPI
+      - "8501:8501"  # Streamlit
+      - "8888:8888"  # Jupyter (optional)
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - DGRAPH_HOST=dgraph
+      - NEO4J_HOST=neo4j
+      - REDIS_HOST=redis
+      - JENA_HOST=jena
+      - PUPPYGRAPH_HOST=puppygraph
+    depends_on:
+      - dgraph
+      - neo4j
+      - redis
+      - jena
+      - postgres
+    networks:
+      - hft_network
+    restart: unless-stopped
+
+  # Dgraph - RDF Storage (scalable to billions of triples)
+  dgraph:
+    image: dgraph/standalone:latest
+    container_name: hft_dgraph
+    ports:
+      - "8080:8080"  # HTTP API
+      - "9080:9080"  # gRPC API
+      - "8000:8000"  # Zero API
+    volumes:
+      - dgraph_data:/dgraph
+    environment:
+      - DGRAPH_ALPHA_WHITELIST=0.0.0.0/0
+    networks:
+      - hft_network
+    restart: unless-stopped
+
+  # Neo4j - Property Graph Database
+  neo4j:
+    image: neo4j:5.20-community
+    container_name: hft_neo4j
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/var/lib/neo4j/import
+      - neo4j_plugins:/plugins
+    environment:
+      - NEO4J_AUTH=neo4j/hft_password_2025
+      - NEO4J_PLUGINS=["apoc", "graph-data-science"]
+                          - NEO4J_dbms_memory_heap_initial__size=256M
+                    - NEO4J_dbms_memory_heap_max__size=512M
+                    - NEO4J_dbms_memory_pagecache_size=256M
+    networks:
+      - hft_network
+    restart: unless-stopped
+
+  # Redis - Caching and Session Management
+  redis:
+    image: redis:7-alpine
+    container_name: hft_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru
+    networks:
+      - hft_network
+    restart: unless-stopped
+
+  # Apache Jena Fuseki - SPARQL Server
+  jena:
+    image: stain/jena-fuseki:4.8.0
+    container_name: hft_jena
+    ports:
+      - "3030:3030"
+    volumes:
+      - jena_data:/fuseki
+      - ./config/fuseki-config.ttl:/fuseki/config/fuseki-config.ttl
+    environment:
+      - FUSEKI_DATASET_1=hft_dataset
+      - FUSEKI_DATASET_1_UPDATE=true
+    networks:
+      - hft_network
+    restart: unless-stopped
+
+  # GraphQL Engine - High-Performance Graph Query Engine (PuppyGraph alternative)
+  graphql_engine:
+    image: hasura/graphql-engine:latest
+    container_name: hft_graphql_engine
+    ports:
+      - "8081:8080"  # GraphQL API
+    volumes:
+      - graphql_data:/data
+    environment:
+      - HASURA_GRAPHQL_DATABASE_URL=postgres://postgres:password@postgres:5432/hft_db
+      - HASURA_GRAPHQL_ENABLE_CONSOLE=true
+      - HASURA_GRAPHQL_DEV_MODE=true
+    networks:
+      - hft_network
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+  # PostgreSQL - Database for GraphQL Engine
+  postgres:
+    image: postgres:15
+    container_name: hft_postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=hft_db
+    networks:
+      - hft_network
+    restart: unless-stopped
+
+  # Monitoring and Logging
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: hft_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - hft_network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: hft_grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./config/grafana/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=hft_admin_2025
+    networks:
+      - hft_network
+    restart: unless-stopped
+
+  # HFTBench Integration (if available)
+  hftbench:
+    image: hftbench/hftbench:latest
+    container_name: hft_hftbench
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./benchmarks:/benchmarks
+    environment:
+      - HFTBENCH_CONFIG=/benchmarks/config.yaml
+    networks:
+      - hft_network
+    restart: unless-stopped
+    profiles:
+      - benchmark
+
+volumes:
+  dgraph_data:
+    driver: local
+  neo4j_data:
+    driver: local
+  neo4j_logs:
+    driver: local
+  neo4j_import:
+    driver: local
+  neo4j_plugins:
+    driver: local
+  redis_data:
+    driver: local
+  jena_data:
+    driver: local
+  graphql_data:
+    driver: local
+  postgres_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  hft_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

@@ -1,0 +1,409 @@
+### HFT Neurosymbolic AI System - API Test Suite
+### This file contains all API endpoints for testing the FastAPI server
+### Use with REST Client extension in VS Code or IntelliJ IDEA
+
+@baseUrl = http://localhost:8001
+@contentType = application/json
+
+### =============================================================================
+### SYSTEM HEALTH & STATUS
+### =============================================================================
+
+### Root endpoint
+GET {{baseUrl}}/
+
+### Health check
+GET {{baseUrl}}/health
+
+### System status with detailed metrics
+GET {{baseUrl}}/api/v1/system/status
+
+### Prometheus metrics
+GET {{baseUrl}}/metrics
+
+### =============================================================================
+### TRADING SIGNALS
+### =============================================================================
+
+### Generate trading signal for AAPL
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "AAPL",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+### Generate trading signal for TSLA with neurosymbolic strategy
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "TSLA",
+    "timeframe": "1h",
+    "strategy": "neurosymbolic"
+}
+
+### Generate trading signal for MSFT with rule-only strategy
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "MSFT",
+    "timeframe": "daily",
+    "strategy": "rule_only"
+}
+
+### Generate trading signal for GOOGL
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "GOOGL",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+### Generate trading signal for AMZN
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "AMZN",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+### Generate trading signal for NVDA
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "NVDA",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+### =============================================================================
+### DATA INGESTION
+### =============================================================================
+
+### Ingest real data for multiple symbols
+POST {{baseUrl}}/api/v1/data/ingest
+Content-Type: {{contentType}}
+
+{
+    "symbols": ["AAPL", "TSLA", "MSFT"],
+    "period": "1y",
+    "synthetic": false,
+    "target_triples": 1000000
+}
+
+### Ingest synthetic data for testing
+POST {{baseUrl}}/api/v1/data/ingest
+Content-Type: {{contentType}}
+
+{
+    "symbols": ["TEST1", "TEST2", "TEST3"],
+    "period": "6mo",
+    "synthetic": true,
+    "target_triples": 500000
+}
+
+### =============================================================================
+### GRAPH DATABASE QUERIES
+### =============================================================================
+
+### Query graph databases - Dgraph
+GET {{baseUrl}}/api/v1/graph/query?query=query%20all%20%7B%0A%20%20all(func:%20has(closePrice))%20%7B%0A%20%20%20%20uid%0A%20%20%20%20symbol%0A%20%20%20%20closePrice%0A%20%20%7D%0A%7D&format=json
+
+### Query graph databases - Neo4j
+GET {{baseUrl}}/api/v1/graph/query?query=MATCH%20(n)%20RETURN%20n%20LIMIT%2010&format=json
+
+### Query graph databases - SPARQL
+GET {{baseUrl}}/api/v1/graph/query?query=SELECT%20*%20WHERE%20%7B%20?s%20?p%20?o%20%7D%20LIMIT%2010&format=json
+
+### =============================================================================
+### RULE MANAGEMENT
+### =============================================================================
+
+### List available rule packs
+GET {{baseUrl}}/api/v1/rules/packs
+
+### Get details of specific rule pack
+GET {{baseUrl}}/api/v1/rules/packs/hft_trading_rules_v1
+
+### Load a specific rule pack
+POST {{baseUrl}}/api/v1/rules/packs/hft_trading_rules_v1/load
+
+### =============================================================================
+### REASONING TRACES
+### =============================================================================
+
+### Get reasoning traces summary
+GET {{baseUrl}}/api/v1/reasoning/traces
+
+### Get reasoning traces with limit
+GET {{baseUrl}}/api/v1/reasoning/traces?limit=5&format=json
+
+### Get specific reasoning trace (replace with actual trace ID)
+GET {{baseUrl}}/api/v1/reasoning/traces/trace_analysis_1756952417_1756952417
+
+### Export reasoning traces as JSON
+GET {{baseUrl}}/api/v1/reasoning/traces/export?format=json&limit=10
+
+### Export reasoning traces as YAML
+GET {{baseUrl}}/api/v1/reasoning/traces/export?format=yaml&limit=5
+
+### Clear reasoning traces
+DELETE {{baseUrl}}/api/v1/reasoning/traces
+
+### Clear old reasoning traces (older than 7 days)
+DELETE {{baseUrl}}/api/v1/reasoning/traces?older_than_days=7
+
+### =============================================================================
+### BENCHMARKING
+### =============================================================================
+
+### Run HFTBench benchmark
+GET {{baseUrl}}/api/v1/benchmarks/hftbench
+
+### =============================================================================
+### METRICS STREAMING
+### =============================================================================
+
+### Stream real-time metrics
+GET {{baseUrl}}/api/v1/metrics/stream
+
+### =============================================================================
+### ERROR TESTING
+### =============================================================================
+
+### Test invalid symbol
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "INVALID_SYMBOL_12345",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+### Test invalid timeframe
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "AAPL",
+    "timeframe": "invalid_timeframe",
+    "strategy": "default"
+}
+
+### Test invalid strategy
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "AAPL",
+    "timeframe": "daily",
+    "strategy": "invalid_strategy"
+}
+
+### Test missing required fields
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+### Test invalid JSON
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "AAPL",
+    "timeframe": "daily",
+    "strategy": "default"
+    // Missing closing brace
+
+### =============================================================================
+### PERFORMANCE TESTING
+### =============================================================================
+
+### Test multiple concurrent requests (run these in parallel)
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "AAPL",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+###
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "TSLA",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+###
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "MSFT",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+###
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "GOOGL",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+###
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "AMZN",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+### =============================================================================
+### COMPREHENSIVE TESTING SEQUENCE
+### =============================================================================
+
+### Step 1: Check system health
+GET {{baseUrl}}/health
+
+### Step 2: Get system status
+GET {{baseUrl}}/api/v1/system/status
+
+### Step 3: List rule packs
+GET {{baseUrl}}/api/v1/rules/packs
+
+### Step 4: Generate trading signals for multiple symbols
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "AAPL",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+###
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "TSLA",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+###
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+
+{
+    "symbol": "MSFT",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+### Step 5: Check reasoning traces
+GET {{baseUrl}}/api/v1/reasoning/traces
+
+### Step 6: Test data ingestion
+POST {{baseUrl}}/api/v1/data/ingest
+Content-Type: {{contentType}}
+
+{
+    "symbols": ["AAPL", "TSLA"],
+    "period": "1mo",
+    "synthetic": true,
+    "target_triples": 100000
+}
+
+### Step 7: Check metrics
+GET {{baseUrl}}/metrics
+
+### Step 8: Final health check
+GET {{baseUrl}}/health
+
+### =============================================================================
+### CUSTOM HEADERS TESTING
+### =============================================================================
+
+### Test with custom headers
+POST {{baseUrl}}/api/v1/trading/signal
+Content-Type: {{contentType}}
+X-Correlation-ID: test-correlation-123
+X-Request-ID: test-request-456
+User-Agent: HFT-Test-Client/1.0
+
+{
+    "symbol": "AAPL",
+    "timeframe": "daily",
+    "strategy": "default"
+}
+
+### =============================================================================
+### DOCUMENTATION ENDPOINTS
+### =============================================================================
+
+### OpenAPI JSON schema
+GET {{baseUrl}}/openapi.json
+
+### ReDoc documentation
+GET {{baseUrl}}/redoc
+
+### Swagger UI documentation
+GET {{baseUrl}}/docs
+
+### =============================================================================
+### NOTES
+### =============================================================================
+
+# This test suite covers all available endpoints in the HFT Neurosymbolic AI System
+# 
+# Usage Instructions:
+# 1. Ensure the FastAPI server is running on http://localhost:8001
+# 2. Use REST Client extension in VS Code or IntelliJ IDEA
+# 3. Click "Send Request" above each endpoint to test
+# 4. Check responses for expected data and status codes
+# 5. Monitor logs for any errors or warnings
+#
+# Expected Status Codes:
+# - 200: Success
+# - 400: Bad Request (invalid input)
+# - 404: Not Found (invalid endpoint)
+# - 500: Internal Server Error
+# - 503: Service Unavailable (component not ready)
+#
+# Key Features to Test:
+# - Trading signal generation with different symbols and strategies
+# - AI predictions and confidence scoring
+# - Symbolic reasoning and market regime detection
+# - Technical signal analysis
+# - Risk assessment and compliance checking
+# - Reasoning trace generation and export
+# - Rule pack management
+# - System health and monitoring
+# - Error handling and validation
+# - Performance under load
