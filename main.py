@@ -29,6 +29,9 @@ from hft_components.symbolic_reasoner import SymbolicReasoner
 from hft_components.trading_engine import TradingEngine
 from hft_components.monitoring import MonitoringService
 from hft_components.rule_loader import RuleLoader
+from hft_components.rdf_reasoning_engine import RDFReasoningEngine
+from hft_components.allegrograph_client import AllegroGraphClient
+from hft_components.calibration_engine import CalibrationEngine
 
 # Configure logging
 logging.basicConfig(
@@ -161,8 +164,17 @@ async def startup_event():
         # Initialize rule loader first
         rule_loader = RuleLoader()
         
-        # Initialize symbolic reasoner with rule loader
-        symbolic_reasoner = SymbolicReasoner(rule_loader)
+        # Initialize RDF reasoning engine
+        rdf_reasoning_engine = RDFReasoningEngine()
+        
+        # Initialize AllegroGraph client for advanced reasoning
+        allegrograph_client = AllegroGraphClient()
+        
+        # Initialize calibration engine for confidence adjustment
+        calibration_engine = CalibrationEngine()
+        
+        # Initialize symbolic reasoner with rule loader, RDF engine, and calibration engine
+        symbolic_reasoner = SymbolicReasoner(rule_loader, rdf_reasoning_engine, calibration_engine)
         
         trading_engine = TradingEngine()
         monitoring_service = MonitoringService()
@@ -591,10 +603,94 @@ async def clear_reasoning_traces(older_than_days: int = None):
             "older_than_days": older_than_days,
             "timestamp": datetime.now().isoformat()
         }
+
+@app.post("/api/v1/reasoning/allegrograph")
+async def allegrograph_reasoning(request: TradingSignalRequest):
+    """Perform advanced reasoning using AllegroGraph"""
+    try:
+        logger.info(f"Performing AllegroGraph reasoning for {request.symbol}")
+        
+        # Get market data
+        market_data = await graph_manager.get_market_data(request.symbol, request.timeframe)
+        
+        # Perform AllegroGraph reasoning
+        reasoning_type = request.strategy or "market_regime_ontology"
+        reasoning_result = await allegrograph_client.perform_advanced_reasoning(
+            reasoning_type, market_data, request.symbol
+        )
+        
+        REQUEST_COUNT.labels(method="POST", endpoint="/api/v1/reasoning/allegrograph", status="200").inc()
+        return {
+            "symbol": request.symbol,
+            "timeframe": request.timeframe,
+            "reasoning_type": reasoning_type,
+            "result": reasoning_result,
+            "timestamp": datetime.now().isoformat()
+        }
         
     except Exception as e:
-        logger.error(f"Failed to clear reasoning traces: {e}")
-        REQUEST_COUNT.labels(method="DELETE", endpoint="/api/v1/reasoning/traces", status="500").inc()
+        logger.error(f"AllegroGraph reasoning failed: {e}")
+        REQUEST_COUNT.labels(method="POST", endpoint="/api/v1/reasoning/allegrograph", status="500").inc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/calibration/status")
+async def get_calibration_status():
+    """Get calibration engine status"""
+    try:
+        if not calibration_engine:
+            raise HTTPException(status_code=503, detail="Calibration engine not available")
+        
+        status = calibration_engine.get_calibration_status()
+        REQUEST_COUNT.labels(method="GET", endpoint="/api/v1/calibration/status", status="200").inc()
+        return status
+        
+    except Exception as e:
+        logger.error(f"Failed to get calibration status: {e}")
+        REQUEST_COUNT.labels(method="GET", endpoint="/api/v1/calibration/status", status="500").inc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/v1/calibration/update")
+async def update_calibration(rule_id: str = None, symbol: str = None, force: bool = False):
+    """Update calibration models"""
+    try:
+        if not calibration_engine:
+            raise HTTPException(status_code=503, detail="Calibration engine not available")
+        
+        updated = await calibration_engine.update_calibration(rule_id, symbol, force_update=force)
+        
+        REQUEST_COUNT.labels(method="POST", endpoint="/api/v1/calibration/update", status="200").inc()
+        return {
+            "updated": updated,
+            "rule_id": rule_id,
+            "symbol": symbol,
+            "force": force,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to update calibration: {e}")
+        REQUEST_COUNT.labels(method="POST", endpoint="/api/v1/calibration/update", status="500").inc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/v1/calibration/data")
+async def clear_calibration_data(older_than_days: int = None):
+    """Clear calibration data"""
+    try:
+        if not calibration_engine:
+            raise HTTPException(status_code=503, detail="Calibration engine not available")
+        
+        calibration_engine.clear_calibration_data(older_than_days)
+        
+        REQUEST_COUNT.labels(method="DELETE", endpoint="/api/v1/calibration/data", status="200").inc()
+        return {
+            "message": "Calibration data cleared successfully",
+            "older_than_days": older_than_days,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to clear calibration data: {e}")
+        REQUEST_COUNT.labels(method="DELETE", endpoint="/api/v1/calibration/data", status="500").inc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/v1/benchmarks/hftbench")

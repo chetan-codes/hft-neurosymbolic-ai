@@ -17,15 +17,19 @@ import numpy as np
 from kanren import run, var, eq, conde, Relation, facts, fact
 from kanren.core import lall, lany, condeseq
 
-# Import rule loader
+# Import rule loader, RDF reasoning engine, and calibration engine
 from .rule_loader import RuleLoader
+from .rdf_reasoning_engine import RDFReasoningEngine
+from .calibration_engine import CalibrationEngine
 
 logger = logging.getLogger(__name__)
 
 class SymbolicReasoner:
     """Symbolic reasoning engine for HFT compliance and analysis"""
     
-    def __init__(self, rule_loader: Optional[RuleLoader] = None):
+    def __init__(self, rule_loader: Optional[RuleLoader] = None, 
+                 rdf_reasoning_engine: Optional[RDFReasoningEngine] = None,
+                 calibration_engine: Optional[CalibrationEngine] = None):
         self.rules = {}
         self.facts = {}
         self.compliance_rules = {}
@@ -35,6 +39,14 @@ class SymbolicReasoner:
         # Rule loader integration
         self.rule_loader = rule_loader
         self.active_rule_pack = None
+        
+        # RDF reasoning engine for complex rules
+        self.rdf_reasoning_engine = rdf_reasoning_engine
+        self.use_rdf_inference = rdf_reasoning_engine is not None
+        
+        # Calibration engine for confidence adjustment
+        self.calibration_engine = calibration_engine
+        self.use_calibration = calibration_engine is not None
         
         # Initialize reasoning rules
         self._initialize_rules()
@@ -241,6 +253,20 @@ class SymbolicReasoner:
                 compliance_check = await self._check_compliance(market_data, ai_prediction)
                 timing_breakdown["compliance_check_ms"] = (time.time() - compliance_start) * 1000
                 
+                # RDF inference for complex rules (if available)
+                rdf_inference_start = time.time()
+                rdf_inference_results = {}
+                if self.use_rdf_inference and self.rdf_reasoning_engine:
+                    try:
+                        # Perform RDF inference for complex rules
+                        rdf_inference_results = await self._perform_rdf_inference(market_data, symbol)
+                        timing_breakdown["rdf_inference_ms"] = (time.time() - rdf_inference_start) * 1000
+                    except Exception as e:
+                        logger.warning(f"RDF inference failed: {e}")
+                        timing_breakdown["rdf_inference_ms"] = 0
+                else:
+                    timing_breakdown["rdf_inference_ms"] = 0
+                
                 # Trading recommendation
                 recommendation_start = time.time()
                 trading_recommendation = await self._generate_trading_recommendation(market_data, ai_prediction, symbol)
@@ -251,6 +277,7 @@ class SymbolicReasoner:
                     "technical_signals": signal_result,
                     "risk_assessment": risk_assessment,
                     "compliance_check": compliance_check,
+                    "rdf_inference": rdf_inference_results,
                     "trading_recommendation": trading_recommendation
                 }
             else:
@@ -796,7 +823,22 @@ class SymbolicReasoner:
                 0.12 * symbol_factor
             )
             
-            return max(0.1, min(0.95, confidence))
+            base_confidence = max(0.1, min(0.95, confidence))
+            
+            # Apply calibration if available
+            if self.use_calibration and self.calibration_engine:
+                try:
+                    # Create a rule ID for signal confidence
+                    rule_id = f"signal_confidence_{symbol or 'default'}"
+                    calibrated_confidence = await self.calibration_engine.calibrate_confidence(
+                        base_confidence, rule_id, symbol
+                    )
+                    return calibrated_confidence
+                except Exception as e:
+                    logger.warning(f"Calibration failed for signal confidence: {e}")
+                    return base_confidence
+            
+            return base_confidence
             
         except Exception as e:
             logger.error(f"Signal confidence calculation failed: {e}")
@@ -1539,4 +1581,51 @@ class SymbolicReasoner:
                 ]
                 logger.info(f"Cleared reasoning traces older than {older_than_days} days")
         except Exception as e:
-            logger.error(f"Failed to clear reasoning traces: {e}") 
+            logger.error(f"Failed to clear reasoning traces: {e}")
+    
+    async def _perform_rdf_inference(self, market_data: Dict[str, Any], symbol: str = None) -> Dict[str, Any]:
+        """Perform RDF inference for complex rules"""
+        try:
+            if not self.rdf_reasoning_engine:
+                return {"error": "RDF reasoning engine not available"}
+            
+            # Perform different types of RDF inference
+            inference_results = {}
+            
+            # Market regime inference
+            regime_inference = await self.rdf_reasoning_engine.perform_rdf_inference(
+                market_data, "market_regime_inference", symbol
+            )
+            if "error" not in regime_inference:
+                inference_results["market_regime"] = regime_inference
+            
+            # Risk correlation inference
+            risk_inference = await self.rdf_reasoning_engine.perform_rdf_inference(
+                market_data, "risk_correlation_rules", symbol
+            )
+            if "error" not in risk_inference:
+                inference_results["risk_correlation"] = risk_inference
+            
+            # Temporal pattern inference
+            temporal_inference = await self.rdf_reasoning_engine.perform_rdf_inference(
+                market_data, "temporal_pattern_rules", symbol
+            )
+            if "error" not in temporal_inference:
+                inference_results["temporal_patterns"] = temporal_inference
+            
+            # Cross-asset inference
+            cross_asset_inference = await self.rdf_reasoning_engine.perform_rdf_inference(
+                market_data, "cross_asset_rules", symbol
+            )
+            if "error" not in cross_asset_inference:
+                inference_results["cross_asset"] = cross_asset_inference
+            
+            return {
+                "rdf_inference_results": inference_results,
+                "inference_count": len(inference_results),
+                "timestamp": datetime.now().isoformat()
+            }
+            
+        except Exception as e:
+            logger.error(f"RDF inference failed: {e}")
+            return {"error": str(e)} 

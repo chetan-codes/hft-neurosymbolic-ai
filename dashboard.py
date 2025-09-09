@@ -64,7 +64,7 @@ api_internal = os.getenv("API_INTERNAL", "http://127.0.0.1:8000")
 
 # Sidebar navigation
 st.sidebar.title("Navigation")
-page = st.sidebar.selectbox("Choose a page", ["Overview", "Market Analysis", "Trading Signals", "Signal Runner", "Backtesting", "Reasoning Traces", "System Health"])
+page = st.sidebar.selectbox("Choose a page", ["Overview", "Market Analysis", "Trading Signals", "Signal Runner", "Backtesting", "Reasoning Traces", "Calibration Management", "System Health"])
 
 if page == "Overview":
     # Header actions
@@ -1013,6 +1013,107 @@ elif page == "Reasoning Traces":
 			st.error(f"❌ Failed to fetch traces: {response.status_code}")
 	except Exception as e:
 		st.error(f"❌ Error fetching traces: {e}")
+
+elif page == "Calibration Management":
+	st.subheader("🎯 Calibration Management")
+	
+	# Calibration status
+	try:
+		response = httpx.get(f"{api_internal}/api/v1/calibration/status", timeout=5.0)
+		if response.status_code == 200:
+			status_data = response.json()
+			
+			# Display calibration status
+			col1, col2, col3 = st.columns(3)
+			with col1:
+				st.metric("Models Trained", status_data.get("models_trained", 0))
+			with col2:
+				st.metric("Symbols Calibrated", status_data.get("symbols_calibrated", 0))
+			with col3:
+				st.metric("Last Update", status_data.get("last_update", "Never"))
+			
+			# Calibration controls
+			st.subheader("🔧 Calibration Controls")
+			
+			col1, col2 = st.columns(2)
+			with col1:
+				rule_id = st.text_input("Rule ID (optional)", placeholder="e.g., signal_confidence_TSLA")
+				symbol = st.text_input("Symbol (optional)", placeholder="e.g., TSLA")
+				force_update = st.checkbox("Force Update", value=False)
+				
+				if st.button("🔄 Update Calibration", type="primary"):
+					with st.spinner("Updating calibration..."):
+						update_response = httpx.post(
+							f"{api_internal}/api/v1/calibration/update",
+							params={
+								"rule_id": rule_id if rule_id else None,
+								"symbol": symbol if symbol else None,
+								"force": force_update
+							},
+							timeout=30.0
+						)
+						if update_response.status_code == 200:
+							st.success("✅ Calibration updated successfully!")
+							st.rerun()
+						else:
+							st.error(f"❌ Failed to update calibration: {update_response.status_code}")
+			
+			with col2:
+				st.subheader("📊 Calibration Metrics")
+				if "calibration_metrics" in status_data:
+					metrics = status_data["calibration_metrics"]
+					
+					# Brier Score
+					brier_score = metrics.get("brier_score", 0.0)
+					st.metric("Brier Score", f"{brier_score:.4f}", help="Lower is better (0 = perfect calibration)")
+					
+					# ECE
+					ece = metrics.get("ece", 0.0)
+					st.metric("Expected Calibration Error", f"{ece:.4f}", help="Lower is better")
+					
+					# MCE
+					mce = metrics.get("mce", 0.0)
+					st.metric("Max Calibration Error", f"{mce:.4f}", help="Lower is better")
+			
+			# Data management
+			st.subheader("🗑️ Data Management")
+			col1, col2 = st.columns(2)
+			with col1:
+				older_than = st.number_input("Clear data older than (days)", min_value=1, value=30)
+				if st.button("🗑️ Clear Old Data", type="secondary"):
+					with st.spinner("Clearing old calibration data..."):
+						clear_response = httpx.delete(
+							f"{api_internal}/api/v1/calibration/data",
+							params={"older_than_days": older_than},
+							timeout=10.0
+						)
+						if clear_response.status_code == 200:
+							st.success("✅ Old calibration data cleared!")
+							st.rerun()
+						else:
+							st.error(f"❌ Failed to clear data: {clear_response.status_code}")
+			
+			with col2:
+				if st.button("📊 Generate Calibration Report", type="secondary"):
+					with st.spinner("Generating calibration report..."):
+						# This would call a report generation endpoint
+						st.info("📊 Calibration report generation would be implemented here")
+			
+			# Calibration history
+			if "calibration_history" in status_data:
+				st.subheader("📈 Calibration History")
+				history = status_data["calibration_history"]
+				if history:
+					df = pd.DataFrame(history)
+					st.dataframe(df, use_container_width=True)
+				else:
+					st.info("No calibration history available")
+		
+		else:
+			st.error(f"❌ Failed to fetch calibration status: {response.status_code}")
+	
+	except Exception as e:
+		st.error(f"❌ Error fetching calibration status: {e}")
 
 elif page == "System Health":
 	st.subheader("🏥 System Health & Metrics")
