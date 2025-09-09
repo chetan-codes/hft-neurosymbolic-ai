@@ -195,9 +195,36 @@ class SymbolicReasoner:
             # Try to use rule pack evaluation first, fall back to hardcoded rules
             if self.active_rule_pack and self.rule_loader:
                 self.add_reasoning_step("rule_evaluation", f"Using rule pack: {self.active_rule_pack}")
+                
+                # Evaluate market regime with detailed logging
+                regime_result = self.evaluate_market_regime_rules(market_data)
+                if "evaluated_regimes" in regime_result:
+                    for regime_eval in regime_result["evaluated_regimes"]:
+                        self.add_rule_evaluation(
+                            rule_name=regime_eval["regime_name"],
+                            rule_type="regime",
+                            input_data={"volatility": market_data.get("volatility", 0), "trend_strength": market_data.get("trend_strength", 0)},
+                            output={"regime": regime_eval["regime_name"], "match_score": regime_eval["match_score"]},
+                            match_score=regime_eval["match_score"],
+                            applied=regime_eval["regime_name"] == regime_result["regime"]
+                        )
+                
+                # Evaluate technical signals with detailed logging
+                signal_result = self.evaluate_technical_signal_rules(market_data)
+                if "evaluated_rules" in signal_result:
+                    for rule_eval in signal_result["evaluated_rules"]:
+                        self.add_rule_evaluation(
+                            rule_name=rule_eval["rule_id"],
+                            rule_type="signal",
+                            input_data={"ma_short": market_data.get("ma_short", 0), "ma_long": market_data.get("ma_long", 0), "rsi": market_data.get("rsi", 50)},
+                            output={"signal": rule_eval["signal"], "match_score": rule_eval["match_score"]},
+                            match_score=rule_eval["match_score"],
+                            applied=rule_eval["rule_id"] == signal_result.get("rule_id")
+                        )
+                
                 analysis_results = {
-                    "market_regime": self.evaluate_market_regime_rules(market_data),
-                    "technical_signals": self.evaluate_technical_signal_rules(market_data),
+                    "market_regime": regime_result,
+                    "technical_signals": signal_result,
                     "risk_assessment": await self._assess_risk(market_data, ai_prediction),
                     "compliance_check": await self._check_compliance(market_data, ai_prediction),
                     "trading_recommendation": await self._generate_trading_recommendation(market_data, ai_prediction, symbol)
@@ -958,6 +985,9 @@ class SymbolicReasoner:
             best_confidence = 0.0
             best_match_score = 0.0
             
+            # Track all evaluated regimes for logging
+            evaluated_regimes = []
+            
             for regime_name, regime_data in regime_rules.items():
                 if 'conditions' not in regime_data:
                     continue
@@ -965,22 +995,49 @@ class SymbolicReasoner:
                 # Calculate match score for this regime
                 match_score = self._calculate_regime_match_score(regime_data['conditions'], volatility, trend_strength, volume_data)
                 
+                # Log regime evaluation
+                regime_eval = {
+                    "regime_name": regime_name,
+                    "match_score": match_score,
+                    "confidence_threshold": regime_data.get('confidence_threshold', 0.5),
+                    "conditions": regime_data.get('conditions', [])
+                }
+                evaluated_regimes.append(regime_eval)
+                
                 if match_score > best_match_score:
                     best_match_score = match_score
                     best_regime = regime_name
                     best_confidence = regime_data.get('confidence_threshold', 0.5)
             
+            # Log all regime evaluations for traceability
+            logger.info(f"Regime rule evaluation completed. Evaluated {len(evaluated_regimes)} regimes")
+            for regime_eval in evaluated_regimes:
+                logger.debug(f"Regime {regime_eval['regime_name']}: match_score={regime_eval['match_score']:.3f}, "
+                           f"confidence_threshold={regime_eval['confidence_threshold']:.3f}")
+            
             if best_regime:
                 # Calculate confidence based on match score and rule confidence
                 calculated_confidence = max(0.1, min(0.95, best_match_score * best_confidence))
+                
+                # Log the selected regime
+                logger.info(f"Selected regime: {best_regime} (match_score={best_match_score:.3f}, "
+                           f"confidence={calculated_confidence:.3f})")
+                
                 return {
                     "regime": best_regime,
                     "confidence": calculated_confidence,
                     "match_score": best_match_score,
-                    "rule_confidence": best_confidence
+                    "rule_confidence": best_confidence,
+                    "evaluated_regimes": evaluated_regimes  # Include all evaluated regimes for traceability
                 }
             else:
-                return {"regime": "unknown", "confidence": 0.0, "match_score": 0.0}
+                logger.info("No matching regimes found, returning unknown regime")
+                return {
+                    "regime": "unknown", 
+                    "confidence": 0.0, 
+                    "match_score": 0.0,
+                    "evaluated_regimes": evaluated_regimes
+                }
                 
         except Exception as e:
             logger.error(f"Regime rule evaluation failed: {e}")
@@ -993,14 +1050,35 @@ class SymbolicReasoner:
             best_confidence = 0.0
             best_match_score = 0.0
             best_priority = 0
+            best_rule_id = None
+            best_signal_name = None
+            best_rule_name = None
+            
+            # Track all evaluated rules for logging
+            evaluated_rules = []
             
             for signal_name, signal_data in signal_rules.items():
                 if 'rules' not in signal_data:
                     continue
                 
                 for rule_name, rule_data in signal_data['rules'].items():
+                    # Create unique rule ID
+                    rule_id = f"{signal_name}.{rule_name}"
+                    
                     # Calculate match score for this rule
                     match_score = self._calculate_signal_match_score(rule_data, ma_short, ma_long, rsi, price_data)
+                    
+                    # Log rule evaluation
+                    rule_eval = {
+                        "rule_id": rule_id,
+                        "signal_name": signal_name,
+                        "rule_name": rule_name,
+                        "match_score": match_score,
+                        "condition": rule_data.get('condition', ''),
+                        "signal": rule_data.get('signal', 'wait'),
+                        "rule_confidence": rule_data.get('confidence', 0.5)
+                    }
+                    evaluated_rules.append(rule_eval)
                     
                     if match_score > 0:  # Only consider rules that match
                         # Calculate priority: RSI extreme conditions get higher priority
@@ -1020,19 +1098,47 @@ class SymbolicReasoner:
                             best_match_score = match_score
                             best_signal = rule_data.get('signal', 'wait')
                             best_confidence = rule_data.get('confidence', 0.5)
+                            best_rule_id = rule_id
+                            best_signal_name = signal_name
+                            best_rule_name = rule_name
+            
+            # Log all rule evaluations for traceability
+            logger.info(f"Signal rule evaluation completed. Evaluated {len(evaluated_rules)} rules")
+            for rule_eval in evaluated_rules:
+                logger.debug(f"Rule {rule_eval['rule_id']}: match_score={rule_eval['match_score']:.3f}, "
+                           f"signal={rule_eval['signal']}, confidence={rule_eval['rule_confidence']:.3f}")
             
             if best_signal:
                 # Calculate confidence based on match score and rule confidence
                 calculated_confidence = max(0.1, min(0.95, best_match_score * best_confidence))
+                
+                # Log the selected rule
+                logger.info(f"Selected rule: {best_rule_id} (signal={best_signal}, "
+                           f"match_score={best_match_score:.3f}, priority={best_priority}, "
+                           f"confidence={calculated_confidence:.3f})")
+                
                 return {
                     "signal": best_signal,
                     "confidence": calculated_confidence,
                     "match_score": best_match_score,
                     "rule_confidence": best_confidence,
-                    "priority": best_priority
+                    "priority": best_priority,
+                    "rule_id": best_rule_id,
+                    "signal_name": best_signal_name,
+                    "rule_name": best_rule_name,
+                    "evaluated_rules": evaluated_rules  # Include all evaluated rules for traceability
                 }
             else:
-                return {"signal": "wait", "confidence": 0.0, "match_score": 0.0}
+                logger.info("No matching rules found, returning wait signal")
+                return {
+                    "signal": "wait", 
+                    "confidence": 0.0, 
+                    "match_score": 0.0,
+                    "rule_id": None,
+                    "signal_name": None,
+                    "rule_name": None,
+                    "evaluated_rules": evaluated_rules
+                }
                 
         except Exception as e:
             logger.error(f"Signal rule evaluation failed: {e}")
