@@ -184,11 +184,14 @@ class SymbolicReasoner:
     async def analyze(self, market_data: Dict[str, Any], ai_prediction: Dict[str, Any], symbol: str = None) -> Dict[str, Any]:
         """Perform symbolic analysis of market data and AI predictions"""
         start_time = time.time()
+        timing_breakdown = {}
         
         try:
             # Start reasoning trace
+            trace_start = time.time()
             session_id = f"analysis_{int(time.time())}"
             trace_id = self.start_reasoning_trace(session_id, market_data)
+            timing_breakdown["trace_setup_ms"] = (time.time() - trace_start) * 1000
             
             self.add_reasoning_step("analysis_start", "Starting symbolic analysis of market data")
             
@@ -197,7 +200,10 @@ class SymbolicReasoner:
                 self.add_reasoning_step("rule_evaluation", f"Using rule pack: {self.active_rule_pack}")
                 
                 # Evaluate market regime with detailed logging
+                regime_start = time.time()
                 regime_result = self.evaluate_market_regime_rules(market_data)
+                timing_breakdown["regime_evaluation_ms"] = (time.time() - regime_start) * 1000
+                
                 if "evaluated_regimes" in regime_result:
                     for regime_eval in regime_result["evaluated_regimes"]:
                         self.add_rule_evaluation(
@@ -210,7 +216,10 @@ class SymbolicReasoner:
                         )
                 
                 # Evaluate technical signals with detailed logging
+                signal_start = time.time()
                 signal_result = self.evaluate_technical_signal_rules(market_data)
+                timing_breakdown["signal_evaluation_ms"] = (time.time() - signal_start) * 1000
+                
                 if "evaluated_rules" in signal_result:
                     for rule_eval in signal_result["evaluated_rules"]:
                         self.add_rule_evaluation(
@@ -222,12 +231,27 @@ class SymbolicReasoner:
                             applied=rule_eval["rule_id"] == signal_result.get("rule_id")
                         )
                 
+                # Risk assessment
+                risk_start = time.time()
+                risk_assessment = await self._assess_risk(market_data, ai_prediction)
+                timing_breakdown["risk_assessment_ms"] = (time.time() - risk_start) * 1000
+                
+                # Compliance check
+                compliance_start = time.time()
+                compliance_check = await self._check_compliance(market_data, ai_prediction)
+                timing_breakdown["compliance_check_ms"] = (time.time() - compliance_start) * 1000
+                
+                # Trading recommendation
+                recommendation_start = time.time()
+                trading_recommendation = await self._generate_trading_recommendation(market_data, ai_prediction, symbol)
+                timing_breakdown["trading_recommendation_ms"] = (time.time() - recommendation_start) * 1000
+                
                 analysis_results = {
                     "market_regime": regime_result,
                     "technical_signals": signal_result,
-                    "risk_assessment": await self._assess_risk(market_data, ai_prediction),
-                    "compliance_check": await self._check_compliance(market_data, ai_prediction),
-                    "trading_recommendation": await self._generate_trading_recommendation(market_data, ai_prediction, symbol)
+                    "risk_assessment": risk_assessment,
+                    "compliance_check": compliance_check,
+                    "trading_recommendation": trading_recommendation
                 }
             else:
                 self.add_reasoning_step("rule_evaluation", "Using hardcoded rules (fallback)")
@@ -259,6 +283,9 @@ class SymbolicReasoner:
             reasoning_time = time.time() - start_time
             self._update_metrics(reasoning_time)
             
+            # Add total timing to breakdown
+            timing_breakdown["total_ms"] = reasoning_time * 1000
+            
             # End reasoning trace
             performance_metrics = {"reasoning_time_ms": reasoning_time * 1000}
             self.end_reasoning_trace(final_decision, performance_metrics)
@@ -266,6 +293,7 @@ class SymbolicReasoner:
             return {
                 "analysis": analysis_results,
                 "reasoning_time_ms": reasoning_time * 1000,
+                "timing_breakdown": timing_breakdown,
                 "timestamp": datetime.now().isoformat(),
                 "rule_pack_used": self.active_rule_pack if self.active_rule_pack else "hardcoded",
                 "reasoning_trace_id": trace_id

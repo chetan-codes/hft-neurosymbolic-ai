@@ -186,36 +186,50 @@ class AIEngine:
     async def predict(self, market_data: Dict[str, Any], symbol: str = None) -> Dict[str, Any]:
         """Generate predictions from market data"""
         start_time = time.time()
+        timing_breakdown = {}
         
         try:
             predictions = {}
             
             # Process market data
+            data_processing_start = time.time()
             processed_data = self._process_market_data(market_data)
+            timing_breakdown["data_processing_ms"] = (time.time() - data_processing_start) * 1000
             
             if processed_data is None:
                 return {"error": "Invalid market data"}
             
             # Generate predictions for each model
+            model_timings = {}
             for model_type, model in self.models.items():
                 try:
+                    model_start = time.time()
                     prediction = await self._generate_prediction(model_type, model, processed_data, symbol)
+                    model_timings[f"{model_type}_ms"] = (time.time() - model_start) * 1000
                     predictions[model_type] = prediction
                 except Exception as e:
                     logger.error(f"Prediction failed for {model_type}: {e}")
                     predictions[model_type] = {"error": str(e)}
+                    model_timings[f"{model_type}_ms"] = 0
             
             # Ensemble prediction
+            ensemble_start = time.time()
             ensemble_prediction = self._ensemble_predictions(predictions)
+            timing_breakdown["ensemble_ms"] = (time.time() - ensemble_start) * 1000
             
             # Update metrics
             prediction_time = time.time() - start_time
             self._update_metrics(prediction_time)
             
+            # Add detailed timing information
+            timing_breakdown.update(model_timings)
+            timing_breakdown["total_ms"] = prediction_time * 1000
+            
             return {
                 "predictions": predictions,
                 "ensemble": ensemble_prediction,
                 "prediction_time_ms": prediction_time * 1000,
+                "timing_breakdown": timing_breakdown,
                 "timestamp": datetime.now().isoformat(),
                 "symbol": symbol
             }
