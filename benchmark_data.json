@@ -1,383 +1,402 @@
 {
-  "benchmark_metadata": {
-    "test_date": "2025-01-09",
-    "duration_hours": 24,
-    "iterations_per_test": 1000,
-    "hardware": {
-      "cpu": "8-core Intel i7",
-      "memory": "32GB DDR4",
-      "storage": "SSD",
-      "network": "localhost"
+    "benchmark_metadata": {
+        "test_date": "2025-01-09",
+        "duration_hours": 24,
+        "iterations_per_test": 1000,
+        "hardware": {
+            "cpu": "8-core Intel i7",
+            "memory": "32GB DDR4",
+            "storage": "SSD",
+            "network": "localhost"
+        },
+        "data_volume": {
+            "stock_records": 10000,
+            "trading_rules": 100,
+            "test_symbols": [
+                "AAPL",
+                "MSFT",
+                "GOOGL",
+                "TSLA",
+                "AMZN"
+            ]
+        }
     },
-    "data_volume": {
-      "stock_records": 10000,
-      "trading_rules": 100,
-      "test_symbols": ["AAPL", "MSFT", "GOOGL", "TSLA", "AMZN"]
-    }
-  },
-  "latency_results": {
-    "single_signal": {
-      "neurosymbolic_ai": {
-        "mean_ms": 12.3,
-        "median_ms": 11.8,
-        "p95_ms": 18.2,
-        "p99_ms": 24.7,
-        "std_dev": 3.1
-      },
-      "rdf_only": {
-        "mean_ms": 89.7,
-        "median_ms": 85.4,
-        "p95_ms": 134.2,
-        "p99_ms": 178.9,
-        "std_dev": 18.6
-      },
-      "improvement_factor": 7.3
+    "latency_results": {
+        "single_signal": {
+            "neurosymbolic_ai": {
+                "mean_ms": 12.3,
+                "median_ms": 11.8,
+                "p95_ms": 18.2,
+                "p99_ms": 24.7,
+                "std_dev": 3.1
+            },
+            "rdf_only": {
+                "mean_ms": 89.7,
+                "median_ms": 85.4,
+                "p95_ms": 134.2,
+                "p99_ms": 178.9,
+                "std_dev": 18.6
+            },
+            "improvement_factor": 7.3
+        },
+        "batch_processing_100": {
+            "neurosymbolic_ai": {
+                "mean_ms": 45.2,
+                "median_ms": 43.1,
+                "p95_ms": 67.8,
+                "p99_ms": 89.4,
+                "std_dev": 8.9
+            },
+            "rdf_only": {
+                "mean_ms": 1247.3,
+                "median_ms": 1189.2,
+                "p95_ms": 1845.6,
+                "p99_ms": 2234.7,
+                "std_dev": 234.1
+            },
+            "improvement_factor": 27.6
+        },
+        "complex_reasoning": {
+            "neurosymbolic_ai": {
+                "mean_ms": 23.1,
+                "median_ms": 22.4,
+                "p95_ms": 34.7,
+                "p99_ms": 45.2,
+                "std_dev": 5.8
+            },
+            "rdf_only": {
+                "mean_ms": 156.8,
+                "median_ms": 149.3,
+                "p95_ms": 234.1,
+                "p99_ms": 289.7,
+                "std_dev": 31.2
+            },
+            "improvement_factor": 6.8
+        },
+        "rule_evaluation": {
+            "neurosymbolic_ai": {
+                "mean_ms": 1.2,
+                "median_ms": 1.1,
+                "p95_ms": 1.8,
+                "p99_ms": 2.3,
+                "std_dev": 0.3
+            },
+            "rdf_only": {
+                "mean_ms": 8.9,
+                "median_ms": 8.4,
+                "p95_ms": 13.2,
+                "p99_ms": 16.7,
+                "std_dev": 2.1
+            },
+            "improvement_factor": 7.4
+        }
     },
-    "batch_processing_100": {
-      "neurosymbolic_ai": {
-        "mean_ms": 45.2,
-        "median_ms": 43.1,
-        "p95_ms": 67.8,
-        "p99_ms": 89.4,
-        "std_dev": 8.9
-      },
-      "rdf_only": {
-        "mean_ms": 1247.3,
-        "median_ms": 1189.2,
-        "p95_ms": 1845.6,
-        "p99_ms": 2234.7,
-        "std_dev": 234.1
-      },
-      "improvement_factor": 27.6
+    "throughput_results": {
+        "light_load_10_rps": {
+            "neurosymbolic_ai": {
+                "achieved_rps": 10.0,
+                "avg_latency_ms": 12.3,
+                "error_rate": 0.0
+            },
+            "rdf_only": {
+                "achieved_rps": 8.2,
+                "avg_latency_ms": 89.7,
+                "error_rate": 0.0
+            },
+            "improvement_percent": 22.0
+        },
+        "medium_load_50_rps": {
+            "neurosymbolic_ai": {
+                "achieved_rps": 48.7,
+                "avg_latency_ms": 15.2,
+                "error_rate": 0.0
+            },
+            "rdf_only": {
+                "achieved_rps": 12.1,
+                "avg_latency_ms": 234.6,
+                "error_rate": 0.0
+            },
+            "improvement_percent": 302.0
+        },
+        "heavy_load_100_rps": {
+            "neurosymbolic_ai": {
+                "achieved_rps": 95.3,
+                "avg_latency_ms": 18.7,
+                "error_rate": 0.0
+            },
+            "rdf_only": {
+                "achieved_rps": 6.8,
+                "avg_latency_ms": 456.2,
+                "error_rate": 0.0
+            },
+            "improvement_percent": 1301.0
+        },
+        "peak_load_200_rps": {
+            "neurosymbolic_ai": {
+                "achieved_rps": 187.2,
+                "avg_latency_ms": 23.4,
+                "error_rate": 0.0
+            },
+            "rdf_only": {
+                "achieved_rps": 2.1,
+                "avg_latency_ms": 892.3,
+                "error_rate": 0.0
+            },
+            "improvement_percent": 8819.0
+        }
     },
-    "complex_reasoning": {
-      "neurosymbolic_ai": {
-        "mean_ms": 23.1,
-        "median_ms": 22.4,
-        "p95_ms": 34.7,
-        "p99_ms": 45.2,
-        "std_dev": 5.8
-      },
-      "rdf_only": {
-        "mean_ms": 156.8,
-        "median_ms": 149.3,
-        "p95_ms": 234.1,
-        "p99_ms": 289.7,
-        "std_dev": 31.2
-      },
-      "improvement_factor": 6.8
+    "memory_usage": {
+        "neurosymbolic_ai": {
+            "database_layer_mb": 245,
+            "processing_engine_mb": 128,
+            "caching_layer_mb": 89,
+            "total_mb": 462,
+            "peak_mb": 512
+        },
+        "rdf_only": {
+            "database_layer_mb": 189,
+            "processing_engine_mb": 67,
+            "caching_layer_mb": 0,
+            "total_mb": 256,
+            "peak_mb": 289
+        },
+        "memory_overhead_mb": 206
     },
-    "rule_evaluation": {
-      "neurosymbolic_ai": {
-        "mean_ms": 1.2,
-        "median_ms": 1.1,
-        "p95_ms": 1.8,
-        "p99_ms": 2.3,
-        "std_dev": 0.3
-      },
-      "rdf_only": {
-        "mean_ms": 8.9,
-        "median_ms": 8.4,
-        "p95_ms": 13.2,
-        "p99_ms": 16.7,
-        "std_dev": 2.1
-      },
-      "improvement_factor": 7.4
-    }
-  },
-  "throughput_results": {
-    "light_load_10_rps": {
-      "neurosymbolic_ai": {
-        "achieved_rps": 10.0,
-        "avg_latency_ms": 12.3,
-        "error_rate": 0.0
-      },
-      "rdf_only": {
-        "achieved_rps": 8.2,
-        "avg_latency_ms": 89.7,
-        "error_rate": 0.0
-      },
-      "improvement_percent": 22.0
-    },
-    "medium_load_50_rps": {
-      "neurosymbolic_ai": {
-        "achieved_rps": 48.7,
-        "avg_latency_ms": 15.2,
-        "error_rate": 0.0
-      },
-      "rdf_only": {
-        "achieved_rps": 12.1,
-        "avg_latency_ms": 234.6,
-        "error_rate": 0.0
-      },
-      "improvement_percent": 302.0
-    },
-    "heavy_load_100_rps": {
-      "neurosymbolic_ai": {
-        "achieved_rps": 95.3,
-        "avg_latency_ms": 18.7,
-        "error_rate": 0.0
-      },
-      "rdf_only": {
-        "achieved_rps": 6.8,
-        "avg_latency_ms": 456.2,
-        "error_rate": 0.0
-      },
-      "improvement_percent": 1301.0
-    },
-    "peak_load_200_rps": {
-      "neurosymbolic_ai": {
-        "achieved_rps": 187.2,
-        "avg_latency_ms": 23.4,
-        "error_rate": 0.0
-      },
-      "rdf_only": {
-        "achieved_rps": 2.1,
-        "avg_latency_ms": 892.3,
-        "error_rate": 0.0
-      },
-      "improvement_percent": 8819.0
-    }
-  },
-  "memory_usage": {
-    "neurosymbolic_ai": {
-      "database_layer_mb": 245,
-      "processing_engine_mb": 128,
-      "caching_layer_mb": 89,
-      "total_mb": 462,
-      "peak_mb": 512
-    },
-    "rdf_only": {
-      "database_layer_mb": 189,
-      "processing_engine_mb": 67,
-      "caching_layer_mb": 0,
-      "total_mb": 256,
-      "peak_mb": 289
-    },
-    "memory_overhead_mb": 206
-  },
-  "accuracy_results": {
-    "trending_bull": {
-      "neurosymbolic_ai": 87.3,
-      "rdf_only": 72.1,
-      "improvement": 15.2
-    },
-    "trending_bear": {
-      "neurosymbolic_ai": 84.7,
-      "rdf_only": 68.9,
-      "improvement": 15.8
-    },
-    "sideways": {
-      "neurosymbolic_ai": 79.2,
-      "rdf_only": 65.4,
-      "improvement": 13.8
-    },
-    "high_volatility": {
-      "neurosymbolic_ai": 82.1,
-      "rdf_only": 58.7,
-      "improvement": 23.4
-    },
-    "overall": {
-      "neurosymbolic_ai": 83.3,
-      "rdf_only": 66.3,
-      "improvement": 17.0
-    }
-  },
-  "calibration_metrics": {
-    "neurosymbolic_ai": {
-      "brier_score": 0.142,
-      "expected_calibration_error": 0.023,
-      "max_calibration_error": 0.156,
-      "reliability_diagram_score": 0.89
-    },
-    "rdf_only": {
-      "brier_score": 0.267,
-      "expected_calibration_error": 0.089,
-      "max_calibration_error": 0.234,
-      "reliability_diagram_score": 0.67
-    },
-    "improvement": {
-      "brier_score_percent": 47.0,
-      "ece_percent": 74.0,
-      "mce_percent": 33.0
-    }
-  },
-  "explainability_analysis": {
-    "rule_traceability": {
-      "neurosymbolic_ai": 100.0,
-      "rdf_only": 45.0,
-      "improvement": 55.0
-    },
-    "decision_path_completeness": {
-      "neurosymbolic_ai": 100.0,
-      "rdf_only": 60.0,
-      "improvement": 40.0
-    },
-    "confidence_breakdown": {
-      "neurosymbolic_ai": 100.0,
-      "rdf_only": 0.0,
-      "improvement": 100.0
-    },
-    "temporal_context": {
-      "neurosymbolic_ai": 100.0,
-      "rdf_only": 20.0,
-      "improvement": 80.0
-    }
-  },
-  "scalability_analysis": {
-    "horizontal_scaling": {
-      "1_user": {
-        "neurosymbolic_ai_rps": 95.3,
-        "rdf_only_rps": 6.8,
-        "scaling_factor": 14.0
-      },
-      "10_users": {
-        "neurosymbolic_ai_rps": 847.2,
-        "rdf_only_rps": 12.4,
-        "scaling_factor": 68.3
-      },
-      "50_users": {
-        "neurosymbolic_ai_rps": 3421.8,
-        "rdf_only_rps": 8.7,
-        "scaling_factor": 393.3
-      },
-      "100_users": {
-        "neurosymbolic_ai_rps": 6789.3,
-        "rdf_only_rps": 2.1,
-        "scaling_factor": 3233.0
-      }
-    },
-    "data_volume_scaling": {
-      "1k_records": {
-        "neurosymbolic_ai_ms": 12.3,
-        "rdf_only_ms": 89.7,
-        "scaling_factor": 7.3
-      },
-      "10k_records": {
-        "neurosymbolic_ai_ms": 15.7,
-        "rdf_only_ms": 234.1,
-        "scaling_factor": 14.9
-      },
-      "100k_records": {
-        "neurosymbolic_ai_ms": 23.4,
-        "rdf_only_ms": 1456.8,
-        "scaling_factor": 62.2
-      },
-      "1m_records": {
-        "neurosymbolic_ai_ms": 45.2,
-        "rdf_only_ms": 8923.4,
-        "scaling_factor": 197.4
-      }
-    }
-  },
-  "cost_analysis": {
-    "monthly_infrastructure": {
-      "neurosymbolic_ai": {
-        "compute_usd": 1200,
-        "database_licenses_usd": 2500,
-        "storage_usd": 150,
-        "total_usd": 3850
-      },
-      "rdf_only": {
-        "compute_usd": 400,
-        "database_licenses_usd": 800,
-        "storage_usd": 100,
-        "total_usd": 1300
-      },
-      "cost_difference_usd": 2550
-    },
-    "performance_value": {
-      "latency_reduction_value_usd": 50000,
-      "accuracy_improvement_value_usd": 75000,
-      "explainability_value_usd": 25000,
-      "total_value_usd": 150000,
-      "roi_percent": 5882.0
-    }
-  },
-  "detailed_trace_examples": {
-    "neurosymbolic_ai_trace": {
-      "market_regime_detection": {
-        "rules_evaluated": 3,
+    "accuracy_results": {
         "trending_bull": {
-          "match_score": 0.85,
-          "confidence": 0.87,
-          "conditions_met": ["price_trend_positive", "volume_increasing"]
+            "neurosymbolic_ai": 87.3,
+            "rdf_only": 72.1,
+            "improvement": 15.2
         },
-        "low_volatility": {
-          "match_score": 0.23,
-          "confidence": 0.15,
-          "conditions_met": []
+        "trending_bear": {
+            "neurosymbolic_ai": 84.7,
+            "rdf_only": 68.9,
+            "improvement": 15.8
         },
-        "high_risk": {
-          "match_score": 0.67,
-          "confidence": 0.72,
-          "conditions_met": ["volatility_spike"]
+        "sideways": {
+            "neurosymbolic_ai": 79.2,
+            "rdf_only": 65.4,
+            "improvement": 13.8
+        },
+        "high_volatility": {
+            "neurosymbolic_ai": 82.1,
+            "rdf_only": 58.7,
+            "improvement": 23.4
+        },
+        "overall": {
+            "neurosymbolic_ai": 83.3,
+            "rdf_only": 66.3,
+            "improvement": 17.0
         }
-      },
-      "technical_signal_analysis": {
-        "rules_evaluated": 5,
-        "golden_cross": {
-          "match_score": 0.92,
-          "confidence": 0.89,
-          "conditions_met": ["ma_20_above_ma_50", "crossover_confirmed"]
+    },
+    "calibration_metrics": {
+        "neurosymbolic_ai": {
+            "brier_score": 0.142,
+            "expected_calibration_error": 0.023,
+            "max_calibration_error": 0.156,
+            "reliability_diagram_score": 0.89
         },
-        "rsi_oversold": {
-          "match_score": 0.15,
-          "confidence": 0.12,
-          "conditions_met": []
+        "rdf_only": {
+            "brier_score": 0.267,
+            "expected_calibration_error": 0.089,
+            "max_calibration_error": 0.234,
+            "reliability_diagram_score": 0.67
         },
-        "volume_surge": {
-          "match_score": 0.78,
-          "confidence": 0.81,
-          "conditions_met": ["volume_above_avg_200"]
+        "improvement": {
+            "brier_score_percent": 47.0,
+            "ece_percent": 74.0,
+            "mce_percent": 33.0
         }
-      },
-      "risk_assessment": {
-        "volatility": 0.23,
-        "correlation": 0.45,
-        "liquidity": 0.89,
-        "overall_risk": "low"
-      },
-      "final_decision": {
-        "action": "BUY",
-        "confidence": 0.87,
-        "reasoning_path": "trending_bull + golden_cross + low_risk"
-      }
     },
-    "rdf_only_trace": {
-      "sparql_result": {
-        "signal": "BUY",
-        "confidence": "0.75",
-        "reasoning": "trending_bull"
-      },
-      "explanation": "Limited to basic SPARQL query results without detailed breakdown"
-    }
-  },
-  "test_configurations": {
-    "neurosymbolic_ai": {
-      "ai_engine": {
-        "sequence_length": 100,
-        "models": ["LSTM", "Transformer"],
-        "ensemble_weight": 0.6,
-        "calibration_enabled": true
-      },
-      "symbolic_reasoner": {
-        "rule_pack": "hft_trading_rules_v1",
-        "confidence_method": "strength_based",
-        "calibration_enabled": true,
-        "trace_enabled": true
-      },
-      "databases": {
-        "neo4j": true,
-        "jena": true,
-        "dgraph": true
-      }
+    "explainability_analysis": {
+        "rule_traceability": {
+            "neurosymbolic_ai": 100.0,
+            "rdf_only": 45.0,
+            "improvement": 55.0
+        },
+        "decision_path_completeness": {
+            "neurosymbolic_ai": 100.0,
+            "rdf_only": 60.0,
+            "improvement": 40.0
+        },
+        "confidence_breakdown": {
+            "neurosymbolic_ai": 100.0,
+            "rdf_only": 0.0,
+            "improvement": 100.0
+        },
+        "temporal_context": {
+            "neurosymbolic_ai": 100.0,
+            "rdf_only": 20.0,
+            "improvement": 80.0
+        }
     },
-    "rdf_only": {
-      "database": "jena_fuseki",
-      "query_language": "sparql_1.1",
-      "reasoning": "rdfs_plus",
-      "caching": false
+    "scalability_analysis": {
+        "horizontal_scaling": {
+            "1_user": {
+                "neurosymbolic_ai_rps": 95.3,
+                "rdf_only_rps": 6.8,
+                "scaling_factor": 14.0
+            },
+            "10_users": {
+                "neurosymbolic_ai_rps": 847.2,
+                "rdf_only_rps": 12.4,
+                "scaling_factor": 68.3
+            },
+            "50_users": {
+                "neurosymbolic_ai_rps": 3421.8,
+                "rdf_only_rps": 8.7,
+                "scaling_factor": 393.3
+            },
+            "100_users": {
+                "neurosymbolic_ai_rps": 6789.3,
+                "rdf_only_rps": 2.1,
+                "scaling_factor": 3233.0
+            }
+        },
+        "data_volume_scaling": {
+            "1k_records": {
+                "neurosymbolic_ai_ms": 12.3,
+                "rdf_only_ms": 89.7,
+                "scaling_factor": 7.3
+            },
+            "10k_records": {
+                "neurosymbolic_ai_ms": 15.7,
+                "rdf_only_ms": 234.1,
+                "scaling_factor": 14.9
+            },
+            "100k_records": {
+                "neurosymbolic_ai_ms": 23.4,
+                "rdf_only_ms": 1456.8,
+                "scaling_factor": 62.2
+            },
+            "1m_records": {
+                "neurosymbolic_ai_ms": 45.2,
+                "rdf_only_ms": 8923.4,
+                "scaling_factor": 197.4
+            }
+        }
+    },
+    "cost_analysis": {
+        "monthly_infrastructure": {
+            "neurosymbolic_ai": {
+                "compute_usd": 1200,
+                "database_licenses_usd": 2500,
+                "storage_usd": 150,
+                "total_usd": 3850
+            },
+            "rdf_only": {
+                "compute_usd": 400,
+                "database_licenses_usd": 800,
+                "storage_usd": 100,
+                "total_usd": 1300
+            },
+            "cost_difference_usd": 2550
+        },
+        "performance_value": {
+            "latency_reduction_value_usd": 50000,
+            "accuracy_improvement_value_usd": 75000,
+            "explainability_value_usd": 25000,
+            "total_value_usd": 150000,
+            "roi_percent": 5882.0
+        }
+    },
+    "detailed_trace_examples": {
+        "neurosymbolic_ai_trace": {
+            "market_regime_detection": {
+                "rules_evaluated": 3,
+                "trending_bull": {
+                    "match_score": 0.85,
+                    "confidence": 0.87,
+                    "conditions_met": [
+                        "price_trend_positive",
+                        "volume_increasing"
+                    ]
+                },
+                "low_volatility": {
+                    "match_score": 0.23,
+                    "confidence": 0.15,
+                    "conditions_met": []
+                },
+                "high_risk": {
+                    "match_score": 0.67,
+                    "confidence": 0.72,
+                    "conditions_met": [
+                        "volatility_spike"
+                    ]
+                }
+            },
+            "technical_signal_analysis": {
+                "rules_evaluated": 5,
+                "golden_cross": {
+                    "match_score": 0.92,
+                    "confidence": 0.89,
+                    "conditions_met": [
+                        "ma_20_above_ma_50",
+                        "crossover_confirmed"
+                    ]
+                },
+                "rsi_oversold": {
+                    "match_score": 0.15,
+                    "confidence": 0.12,
+                    "conditions_met": []
+                },
+                "volume_surge": {
+                    "match_score": 0.78,
+                    "confidence": 0.81,
+                    "conditions_met": [
+                        "volume_above_avg_200"
+                    ]
+                }
+            },
+            "risk_assessment": {
+                "volatility": 0.23,
+                "correlation": 0.45,
+                "liquidity": 0.89,
+                "overall_risk": "low"
+            },
+            "final_decision": {
+                "action": "BUY",
+                "confidence": 0.87,
+                "reasoning_path": "trending_bull + golden_cross + low_risk"
+            }
+        },
+        "rdf_only_trace": {
+            "sparql_result": {
+                "signal": "BUY",
+                "confidence": "0.75",
+                "reasoning": "trending_bull"
+            },
+            "explanation": "Limited to basic SPARQL query results without detailed breakdown"
+        }
+    },
+    "test_configurations": {
+        "neurosymbolic_ai": {
+            "ai_engine": {
+                "sequence_length": 100,
+                "models": [
+                    "LSTM",
+                    "Transformer"
+                ],
+                "ensemble_weight": 0.6,
+                "calibration_enabled": true
+            },
+            "symbolic_reasoner": {
+                "rule_pack": "hft_trading_rules_v1",
+                "confidence_method": "strength_based",
+                "calibration_enabled": true,
+                "trace_enabled": true
+            },
+            "databases": {
+                "neo4j": true,
+                "jena": true,
+                "dgraph": true
+            }
+        },
+        "rdf_only": {
+            "database": "jena_fuseki",
+            "query_language": "sparql_1.1",
+            "reasoning": "rdfs_plus",
+            "caching": false
+        }
     }
-  }
 }
